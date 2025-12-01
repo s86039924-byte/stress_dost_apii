@@ -1,0 +1,26 @@
+# Render Blueprint for Stress Dost API
+# Deploy via: render blueprint deploy render.yaml
+
+services:
+  - type: web
+    name: stress-dost-api
+    env: python
+    region: oregon
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: FLASK_DEBUG
+        value: "false"
+      # Set these in the dashboard or override via CLI before deploy
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GOOGLE_SHEET_ID
+        sync: false
+      - key: GOOGLE_SHEETS_CREDENTIALS_PATH
+        value: ./credentials.json
+      - key: SECRET_KEY
+        sync: false

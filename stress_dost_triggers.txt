@@ -1,0 +1,453 @@
+{
+    "thoughts": {
+        "thought_1": {
+            "type": "option_based",
+            "text": "What if I can't solve this question in the exam?",
+            "options": [
+                "I will definitely fail",
+                "I might struggle but I'll try",
+                "I've solved harder questions before"
+            ],
+            "value": 0.7,
+            "personality_tags": [
+                "anxious",
+                "confidence_low"
+            ]
+        },
+        "thought_2": {
+            "type": "sarcasm",
+            "text": "Oh look, another question you probably won't understand...",
+            "value": 0.5,
+            "personality_tags": [
+                "overthinker",
+                "sarcasm_tolerant"
+            ]
+        },
+        "thought_3": {
+            "type": "option_based",
+            "text": "Your friends are probably doing better than you right now",
+            "options": [
+                "Yes, I'm the worst",
+                "They might be, but I'm improving",
+                "I'm not comparing myself to anyone"
+            ],
+            "value": 0.6,
+            "personality_tags": [
+                "comparison_prone"
+            ]
+        },
+        "thought_4": {
+            "type": "sarcasm",
+            "text": "Tick tock... time's running out and you're still stuck!",
+            "value": 0.4,
+            "personality_tags": [
+                "time_pressure",
+                "procrastinator"
+            ]
+        },
+        "thought_5": {
+            "type": "motivation",
+            "text": "You've prepared well for this. Trust your preparation!",
+            "value": -0.3,
+            "personality_tags": [
+                "needs_encouragement"
+            ]
+        },
+        "thought_6": {
+            "type": "option_based",
+            "text": "I don't even remember studying this topic properly",
+            "options": [
+                "I'm completely lost",
+                "I vaguely remember something",
+                "I studied this and I can figure it out"
+            ],
+            "value": 0.8,
+            "personality_tags": [
+                "self_doubt"
+            ]
+        },
+        "thought_7": {
+            "type": "sarcasm",
+            "text": "One wrong answer and your entire preparation is ruined!",
+            "value": 0.6,
+            "personality_tags": [
+                "catastrophizer"
+            ]
+        },
+        "thought_8": {
+            "type": "motivation",
+            "text": "Every question you solve brings you closer to success!",
+            "value": -0.25,
+            "personality_tags": [
+                "needs_encouragement"
+            ]
+        },
+        "thought_9": {
+            "type": "option_based",
+            "text": "What if I'm not smart enough for JEE/NEET?",
+            "options": [
+                "I'm definitely not smart enough",
+                "Intelligence can be developed with effort",
+                "I have what it takes"
+            ],
+            "value": 0.75,
+            "personality_tags": [
+                "self_doubt",
+                "low_confidence"
+            ]
+        },
+        "thought_10": {
+            "type": "sarcasm",
+            "text": "You've already wasted so much time... why continue now?",
+            "value": 0.5,
+            "personality_tags": [
+                "procrastinator",
+                "motivation_low"
+            ]
+        },
+        "thought_11": {
+            "type": "motivation",
+            "text": "This is just practice. You're learning with every mistake!",
+            "value": -0.2,
+            "personality_tags": [
+                "needs_encouragement"
+            ]
+        },
+        "thought_12": {
+            "type": "option_based",
+            "text": "My preparation is not enough compared to toppers",
+            "options": [
+                "I haven't prepared at all",
+                "I've done decent but need more",
+                "I've prepared as well as I can"
+            ],
+            "value": 0.65,
+            "personality_tags": [
+                "comparison_prone"
+            ]
+        },
+        "thought_13": {
+            "type": "sarcasm",
+            "text": "Only geniuses can solve questions this fast. Are you one?",
+            "value": 0.55,
+            "personality_tags": [
+                "ego_challenge"
+            ]
+        },
+        "thought_14": {
+            "type": "motivation",
+            "text": "Remember: every expert was once a beginner. Keep going!",
+            "value": -0.3,
+            "personality_tags": [
+                "needs_encouragement"
+            ]
+        },
+        "thought_15": {
+            "type": "option_based",
+            "text": "I'm overthinking this question too much",
+            "options": [
+                "Yes, I should just guess",
+                "Maybe I need more time",
+                "I should stay calm and think logically"
+            ],
+            "value": 0.5,
+            "personality_tags": [
+                "overthinker"
+            ]
+        }
+    },
+    "frustration": {
+        "frustration_1": {
+            "type": "option_based",
+            "text": "My parents keep saying 'All your friends scored better'",
+            "options": [
+                "They're right, I'm a disappointment",
+                "I'm doing my best despite pressure",
+                "My effort matters more than their comparison"
+            ],
+            "value": 0.8,
+            "personality_tags": [
+                "comparison_prone"
+            ]
+        },
+        "frustration_2": {
+            "type": "sarcasm",
+            "text": "Another mock test, another failure. When will you succeed?",
+            "value": 0.6,
+            "personality_tags": [
+                "needs_push"
+            ]
+        },
+        "frustration_3": {
+            "type": "motivation",
+            "text": "Frustration is temporary. Your efforts will pay off soon!",
+            "value": -0.35,
+            "personality_tags": [
+                "needs_encouragement"
+            ]
+        },
+        "frustration_4": {
+            "type": "option_based",
+            "text": "I feel like I'm wasting money on coaching/tuition",
+            "options": [
+                "Yes, it's all wasted",
+                "I'm getting value from it",
+                "I'm learning valuable skills regardless"
+            ],
+            "value": 0.7,
+            "personality_tags": [
+                "self_doubt"
+            ]
+        },
+        "frustration_5": {
+            "type": "sarcasm",
+            "text": "You've failed so many times... maybe this path isn't for you?",
+            "value": 0.65,
+            "personality_tags": [
+                "needs_push"
+            ]
+        },
+        "frustration_6": {
+            "type": "motivation",
+            "text": "Frustration means you care. Channel it into determination!",
+            "value": -0.3,
+            "personality_tags": [
+                "needs_encouragement"
+            ]
+        },
+        "frustration_7": {
+            "type": "option_based",
+            "text": "Relatives are making fun of my marks",
+            "options": [
+                "I feel humiliated and worthless",
+                "It hurts but I won't let it define me",
+                "Their opinion doesn't matter to my growth"
+            ],
+            "value": 0.75,
+            "personality_tags": [
+                "social_pressure"
+            ]
+        },
+        "frustration_8": {
+            "type": "sarcasm",
+            "text": "See that topper? They probably don't struggle like you do!",
+            "value": 0.5,
+            "personality_tags": [
+                "comparison_prone"
+            ]
+        },
+        "frustration_9": {
+            "type": "motivation",
+            "text": "You're stronger than your frustration. Keep pushing!",
+            "value": -0.25,
+            "personality_tags": [
+                "needs_encouragement"
+            ]
+        },
+        "frustration_10": {
+            "type": "option_based",
+            "text": "I feel like I'm not improving despite all my effort",
+            "options": [
+                "I've made no progress at all",
+                "Small improvements are happening",
+                "Every day I'm getting better"
+            ],
+            "value": 0.8,
+            "personality_tags": [
+                "stuck_feeling"
+            ]
+        },
+        "frustration_11": {
+            "type": "sarcasm",
+            "text": "Stuck on the same type of question? Maybe you're just not cut for this.",
+            "value": 0.55,
+            "personality_tags": [
+                "needs_push"
+            ]
+        },
+        "frustration_12": {
+            "type": "motivation",
+            "text": "Progress isn't always visible, but it's always happening!",
+            "value": -0.28,
+            "personality_tags": [
+                "needs_encouragement"
+            ]
+        },
+        "frustration_13": {
+            "type": "option_based",
+            "text": "I keep making the same silly mistakes repeatedly",
+            "options": [
+                "I'm hopeless and careless",
+                "I'm learning to avoid these mistakes",
+                "Every mistake teaches me something"
+            ],
+            "value": 0.65,
+            "personality_tags": [
+                "mistake_repeaters"
+            ]
+        },
+        "frustration_14": {
+            "type": "sarcasm",
+            "text": "Same mistakes, same results. You're stuck in a loop!",
+            "value": 0.6,
+            "personality_tags": [
+                "needs_push"
+            ]
+        },
+        "frustration_15": {
+            "type": "motivation",
+            "text": "Awareness of mistakes is the first step to fixing them. You're on track!",
+            "value": -0.32,
+            "personality_tags": [
+                "needs_encouragement"
+            ]
+        }
+    },
+    "fear": {
+        "fear_1": {
+            "type": "option_based",
+            "text": "What if I fail the actual exam?",
+            "options": [
+                "I will definitely fail and ruin my life",
+                "I might fail, but I can try again",
+                "I've prepared enough, I'll handle it"
+            ],
+            "value": 0.9,
+            "personality_tags": [
+                "catastrophizer"
+            ]
+        },
+        "fear_2": {
+            "type": "sarcasm",
+            "text": "Imagine failing after studying for 2 years... yikes!",
+            "value": 0.7,
+            "personality_tags": [
+                "anxious"
+            ]
+        },
+        "fear_3": {
+            "type": "motivation",
+            "text": "Fear is normal. Brave people act despite fear!",
+            "value": -0.4,
+            "personality_tags": [
+                "needs_encouragement"
+            ]
+        },
+        "fear_4": {
+            "type": "option_based",
+            "text": "What if I don't get into my dream college?",
+            "options": [
+                "My life will be ruined forever",
+                "I'll figure out my next steps",
+                "There are many paths to success"
+            ],
+            "value": 0.85,
+            "personality_tags": [
+                "future_anxiety"
+            ]
+        },
+        "fear_5": {
+            "type": "sarcasm",
+            "text": "All your dreams depend on this one test. No pressure though! \ud83d\ude0f",
+            "value": 0.75,
+            "personality_tags": [
+                "pressure_sensitive"
+            ]
+        },
+        "fear_6": {
+            "type": "motivation",
+            "text": "Your worth is not defined by one exam result!",
+            "value": -0.35,
+            "personality_tags": [
+                "needs_encouragement"
+            ]
+        },
+        "fear_7": {
+            "type": "option_based",
+            "text": "What will my family think if I don't perform well?",
+            "options": [
+                "They will disown me",
+                "They might be disappointed but will support me",
+                "I know they love me regardless"
+            ],
+            "value": 0.8,
+            "personality_tags": [
+                "family_pressure"
+            ]
+        },
+        "fear_8": {
+            "type": "sarcasm",
+            "text": "Your entire future is on the line right now!",
+            "value": 0.65,
+            "personality_tags": [
+                "pressure_sensitive"
+            ]
+        },
+        "fear_9": {
+            "type": "motivation",
+            "text": "Focus on what you can control. Your effort is enough!",
+            "value": -0.38,
+            "personality_tags": [
+                "needs_encouragement"
+            ]
+        },
+        "fear_10": {
+            "type": "option_based",
+            "text": "What if my health breaks down during preparation?",
+            "options": [
+                "I'm already feeling symptoms, I'll collapse",
+                "I should take better care of myself",
+                "I can maintain health while studying"
+            ],
+            "value": 0.7,
+            "personality_tags": [
+                "health_anxiety"
+            ]
+        },
+        "fear_11": {
+            "type": "sarcasm",
+            "text": "Don't think about failure. But what if it happens anyway?",
+            "value": 0.6,
+            "personality_tags": [
+                "anxious"
+            ]
+        },
+        "fear_12": {
+            "type": "motivation",
+            "text": "Your health and well-being come first. You're doing great!",
+            "value": -0.3,
+            "personality_tags": [
+                "needs_encouragement"
+            ]
+        },
+        "fear_13": {
+            "type": "option_based",
+            "text": "What if I blank out during the actual exam?",
+            "options": [
+                "I will definitely blank out completely",
+                "It might happen but I can handle it",
+                "I've practiced enough to stay calm"
+            ],
+            "value": 0.75,
+            "personality_tags": [
+                "exam_anxiety"
+            ]
+        },
+        "fear_14": {
+            "type": "sarcasm",
+            "text": "Imagine forgetting everything the moment the exam starts!",
+            "value": 0.68,
+            "personality_tags": [
+                "anxious"
+            ]
+        },
+        "fear_15": {
+            "type": "motivation",
+            "text": "You have prepared well. Trust your preparation and your mind!",
+            "value": -0.36,
+            "personality_tags": [
+                "needs_encouragement"
+            ]
+        }
+    }
+}

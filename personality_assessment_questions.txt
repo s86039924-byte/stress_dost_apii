@@ -1,0 +1,1367 @@
+{
+  "assessment_metadata": {
+    "version": "2.1",
+    "total_questions": 45,
+    "personality_dimensions": 11,
+    "assessment_time_minutes": "8-15",
+    "description": "Comprehensive personality assessment for JEE/NEET students focusing on stress, cognition, planning, focus, motivation, resilience, and new behavioral layers like impulsivity, time awareness, and distraction control."
+  },
+  
+  "personality_dimensions": {
+    "stress_sensitivity": {
+      "label": "Stress Sensitivity & Anxiety Response",
+      "range": [0.0, 1.0],
+      "description": "How easily overwhelmed/anxious the student gets under pressure",
+      "low": "Calm, handles pressure well",
+      "high": "High anxiety, easily overwhelmed"
+    },
+    "analytical_thinking": {
+      "label": "Analytical & Logical Thinking",
+      "range": [0.0, 1.0],
+      "description": "Preference for logical, systematic problem-solving",
+      "low": "Intuitive, creative, big-picture thinker",
+      "high": "Analytical, detail-oriented, systematic"
+    },
+    "social_preference": {
+      "label": "Social Preference & Collaboration",
+      "range": [0.0, 1.0],
+      "description": "Comfort level with social interaction and group work",
+      "low": "Introvert, prefers solo work",
+      "high": "Extrovert, enjoys collaboration"
+    },
+    "intrinsic_motivation": {
+      "label": "Intrinsic vs Extrinsic Motivation",
+      "range": [0.0, 1.0],
+      "description": "Whether driven by internal interest or external rewards",
+      "low": "Extrinsic (rewards, grades, recognition)",
+      "high": "Intrinsic (mastery, curiosity, growth)"
+    },
+    "resilience": {
+      "label": "Resilience & Recovery from Setbacks",
+      "range": [0.0, 1.0],
+      "description": "Ability to bounce back from failures",
+      "low": "Dwells on failures, gives up easily",
+      "high": "Bounces back quickly, learns from failures"
+    },
+    "self_confidence": {
+      "label": "Self-Confidence & Self-Efficacy",
+      "range": [0.0, 1.0],
+      "description": "Belief in own abilities and competence",
+      "low": "Lacks confidence, doubts abilities",
+      "high": "High confidence, believes in capabilities"
+    },
+    "planning_tendency": {
+      "label": "Planning & Organization Style",
+      "range": [0.0, 1.0],
+      "description": "Preference for detailed planning vs spontaneous action",
+      "low": "Spontaneous, flexible, last-minute",
+      "high": "Planned, organized, long-term focused"
+    },
+    "openness_to_feedback": {
+      "label": "Openness to Feedback & Growth Mindset",
+      "range": [0.0, 1.0],
+      "description": "Receptiveness to criticism and belief in self-improvement",
+      "low": "Defensive, fixed mindset",
+      "high": "Open to criticism, growth mindset"
+    },
+    "impulsivity": {
+      "label": "Impulsivity & Decision Pace",
+      "range": [0.0, 1.0],
+      "description": "How quickly action is taken without deliberate analysis",
+      "low": "Deliberate, measured",
+      "high": "Impulsive, rushed"
+    },
+    "time_awareness": {
+      "label": "Time Awareness & Pace Control",
+      "range": [0.0, 1.0],
+      "description": "Accuracy of internal clock during study or exams",
+      "low": "Loses track of time",
+      "high": "Highly aware, self-paced"
+    },
+    "distraction_resistance": {
+      "label": "Distraction Resistance & Focus",
+      "range": [0.0, 1.0],
+      "description": "Ability to maintain focus despite interruptions",
+      "low": "Easily distracted",
+      "high": "Deep focus, flow state"
+    }
+  },
+
+  "questions": [
+    {
+      "id": 1,
+      "category": "stress_response",
+      "dimension_primary": "stress_sensitivity",
+      "dimension_secondary": "resilience",
+      "question": "When you encounter a difficult problem that you can't solve immediately, what's your typical first reaction?",
+      "options": [
+        {
+          "text": "I panic and feel overwhelmed, thinking I'll never understand it",
+          "scores": {"stress_sensitivity": 0.95, "analytical_thinking": 0.1, "resilience": 0.05},
+          "traits": ["high_anxiety", "panic_prone"]
+        },
+        {
+          "text": "I take a deep breath, break the problem into smaller parts, and tackle them one by one",
+          "scores": {"stress_sensitivity": 0.15, "analytical_thinking": 0.95, "resilience": 0.85},
+          "traits": ["problem_solver", "systematic"]
+        },
+        {
+          "text": "I feel frustrated but push through with determination",
+          "scores": {"stress_sensitivity": 0.5, "resilience": 0.65, "analytical_thinking": 0.5},
+          "traits": ["persistent", "gritty"]
+        },
+        {
+          "text": "I try to avoid it or distract myself with other things",
+          "scores": {"stress_sensitivity": 0.75, "resilience": 0.2, "planning_tendency": 0.15},
+          "traits": ["avoidant", "procrastinator"]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "category": "social_preference",
+      "dimension_primary": "social_preference",
+      "dimension_secondary": "intrinsic_motivation",
+      "question": "During exam prep, how do you prefer to study?",
+      "options": [
+        {
+          "text": "Alone, in a quiet place where I can focus completely on my own",
+          "scores": {"social_preference": 0.1, "planning_tendency": 0.75, "stress_sensitivity": 0.3},
+          "traits": ["introvert", "independent"]
+        },
+        {
+          "text": "With a close friend or two, discussing concepts and teaching each other",
+          "scores": {"social_preference": 0.45, "intrinsic_motivation": 0.7, "resilience": 0.65},
+          "traits": ["selective_social", "collaborative"]
+        },
+        {
+          "text": "In a large study group where we can motivate each other and stay accountable",
+          "scores": {"social_preference": 0.85, "intrinsic_motivation": 0.6, "analytical_thinking": 0.4},
+          "traits": ["extrovert", "collaborative", "group_oriented"]
+        },
+        {
+          "text": "Varies - sometimes alone, sometimes with others, depending on my mood and the topic",
+          "scores": {"social_preference": 0.5, "planning_tendency": 0.35, "resilience": 0.7},
+          "traits": ["flexible", "adaptable"]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "category": "feedback_reception",
+      "dimension_primary": "openness_to_feedback",
+      "dimension_secondary": "self_confidence",
+      "question": "A teacher or mentor gives you constructive criticism on a solution you worked hard on. How do you typically respond?",
+      "options": [
+        {
+          "text": "I take it personally and feel hurt, questioning my intelligence",
+          "scores": {"openness_to_feedback": 0.1, "self_confidence": 0.15, "stress_sensitivity": 0.8},
+          "traits": ["sensitive", "fixed_mindset", "self_doubt"]
+        },
+        {
+          "text": "I initially feel defensive but then analyze it objectively to understand and improve",
+          "scores": {"openness_to_feedback": 0.7, "self_confidence": 0.6, "analytical_thinking": 0.8},
+          "traits": ["growth_mindset", "analytical", "adaptable"]
+        },
+        {
+          "text": "I get defensive and explain why they're wrong or their feedback doesn't apply",
+          "scores": {"openness_to_feedback": 0.2, "self_confidence": 0.8, "stress_sensitivity": 0.4},
+          "traits": ["defensive", "pride"]
+        },
+        {
+          "text": "I immediately look for the useful bits, ask clarifying questions, and implement changes",
+          "scores": {"openness_to_feedback": 0.95, "self_confidence": 0.85, "intrinsic_motivation": 0.85},
+          "traits": ["growth_mindset", "receptive", "action_oriented"]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "category": "planning_style",
+      "dimension_primary": "planning_tendency",
+      "dimension_secondary": "stress_sensitivity",
+      "question": "How do you typically approach an upcoming exam?",
+      "options": [
+        {
+          "text": "I plan weeks in advance, create detailed study schedules, and follow them strictly",
+          "scores": {"planning_tendency": 0.95, "stress_sensitivity": 0.2, "analytical_thinking": 0.8},
+          "traits": ["organized", "planner", "detail_oriented"]
+        },
+        {
+          "text": "I start studying about 1-2 weeks before with a rough plan that I adjust as needed",
+          "scores": {"planning_tendency": 0.6, "stress_sensitivity": 0.35, "flexibility": 0.7},
+          "traits": ["balanced", "flexible"]
+        },
+        {
+          "text": "I start the week before and hope to cover everything in time",
+          "scores": {"planning_tendency": 0.3, "stress_sensitivity": 0.6, "resilience": 0.5},
+          "traits": ["procrastinator", "risky"]
+        },
+        {
+          "text": "I cram the night before; pressure helps me focus and remember things",
+          "scores": {"planning_tendency": 0.05, "stress_sensitivity": 0.85, "intrinsic_motivation": 0.2},
+          "traits": ["procrastinator", "pressure_driven", "spontaneous"]
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "category": "motivation_source",
+      "dimension_primary": "intrinsic_motivation",
+      "dimension_secondary": "self_confidence",
+      "question": "What's the primary driver that pushes you to study hard for exams?",
+      "options": [
+        {
+          "text": "Fear of failure or disappointing my family/teachers",
+          "scores": {"intrinsic_motivation": 0.1, "stress_sensitivity": 0.75, "self_confidence": 0.3},
+          "traits": ["fear_driven", "external_pressure", "anxious"]
+        },
+        {
+          "text": "Genuine curiosity and desire to understand how things work",
+          "scores": {"intrinsic_motivation": 0.95, "self_confidence": 0.75, "analytical_thinking": 0.8},
+          "traits": ["curious", "intrinsic", "mastery_oriented"]
+        },
+        {
+          "text": "Competition with my peers and desire to rank high",
+          "scores": {"intrinsic_motivation": 0.55, "self_confidence": 0.85, "social_preference": 0.7},
+          "traits": ["competitive", "comparative", "status_driven"]
+        },
+        {
+          "text": "Mixture of all three - I want good grades, understand concepts, and compete fairly with others",
+          "scores": {"intrinsic_motivation": 0.65, "self_confidence": 0.7, "resilience": 0.75},
+          "traits": ["balanced_motivation", "flexible"]
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "category": "resilience",
+      "dimension_primary": "resilience",
+      "dimension_secondary": "stress_sensitivity",
+      "question": "After scoring poorly on a practice test or mock exam, what's your typical reaction?",
+      "options": [
+        {
+          "text": "I dwell on it for days, feeling like I'll never improve and might actually fail",
+          "scores": {"resilience": 0.05, "stress_sensitivity": 0.95, "self_confidence": 0.05},
+          "traits": ["ruminator", "catastrophizer", "fragile"]
+        },
+        {
+          "text": "I analyze what went wrong, identify weak areas, and create a plan to improve them",
+          "scores": {"resilience": 0.9, "analytical_thinking": 0.85, "openness_to_feedback": 0.85},
+          "traits": ["resilient", "learner", "action_oriented"]
+        },
+        {
+          "text": "I feel disappointed but move on quickly; dwelling doesn't help",
+          "scores": {"resilience": 0.7, "stress_sensitivity": 0.3, "self_confidence": 0.6},
+          "traits": ["bouncer_back", "pragmatic", "stable"]
+        },
+        {
+          "text": "I blame external factors (tough paper, bad luck, not enough sleep) and don't change my approach",
+          "scores": {"resilience": 0.2, "openness_to_feedback": 0.15, "planning_tendency": 0.2},
+          "traits": ["externally_attributed", "fixed_mindset"]
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "category": "learning_style",
+      "dimension_primary": "analytical_thinking",
+      "dimension_secondary": "intrinsic_motivation",
+      "question": "When learning a new concept in physics or chemistry, how do you prefer to understand it?",
+      "options": [
+        {
+          "text": "Through detailed mathematical derivations and logical proofs that show why it works",
+          "scores": {"analytical_thinking": 0.95, "intrinsic_motivation": 0.7, "stress_sensitivity": 0.2},
+          "traits": ["analytical", "theoretical", "logical"]
+        },
+        {
+          "text": "Through visual diagrams, animations, and seeing real-world applications",
+          "scores": {"analytical_thinking": 0.65, "intrinsic_motivation": 0.75, "social_preference": 0.3},
+          "traits": ["visual_learner", "practical"]
+        },
+        {
+          "text": "Through memorizing key formulas and practicing lots of similar problems",
+          "scores": {"analytical_thinking": 0.4, "planning_tendency": 0.75, "intrinsic_motivation": 0.3},
+          "traits": ["memorizer", "practice_oriented"]
+        },
+        {
+          "text": "Through discussions with others, getting different explanations until something clicks",
+          "scores": {"social_preference": 0.8, "intrinsic_motivation": 0.7, "openness_to_feedback": 0.8},
+          "traits": ["collaborative_learner", "social", "flexible"]
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "category": "confidence_level",
+      "dimension_primary": "self_confidence",
+      "dimension_secondary": "intrinsic_motivation",
+      "question": "When you see a complex problem on an exam that you've never encountered before, what do you think?",
+      "options": [
+        {
+          "text": "I immediately think I'll get it wrong and panic about the time waste",
+          "scores": {"self_confidence": 0.1, "stress_sensitivity": 0.95, "resilience": 0.15},
+          "traits": ["low_confidence", "anxious", "paralyzed"]
+        },
+        {
+          "text": "I think it's challenging but I can figure it out using my fundamentals",
+          "scores": {"self_confidence": 0.8, "resilience": 0.8, "analytical_thinking": 0.85},
+          "traits": ["confident", "problem_solver", "capable"]
+        },
+        {
+          "text": "I feel a rush of excitement - unknown problems are where I can show my strength",
+          "scores": {"self_confidence": 0.95, "intrinsic_motivation": 0.85, "resilience": 0.9},
+          "traits": ["high_confidence", "challenge_seeker", "growth_oriented"]
+        },
+        {
+          "text": "I'm unsure but I'll give it a try; if I fail, at least I tried",
+          "scores": {"self_confidence": 0.5, "resilience": 0.65, "stress_sensitivity": 0.45},
+          "traits": ["moderate_confidence", "risk_taker", "pragmatic"]
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "category": "social_dynamics",
+      "dimension_primary": "social_preference",
+      "dimension_secondary": "stress_sensitivity",
+      "question": "How do you feel about speaking up in class or in front of a group?",
+      "options": [
+        {
+          "text": "I get nervous and avoid it whenever possible; public speaking is scary",
+          "scores": {"social_preference": 0.1, "stress_sensitivity": 0.8, "self_confidence": 0.2},
+          "traits": ["shy", "anxious_public_speaker", "introverted"]
+        },
+        {
+          "text": "I'm nervous at first but once I start, I get into it",
+          "scores": {"social_preference": 0.5, "self_confidence": 0.6, "resilience": 0.7},
+          "traits": ["initially_anxious", "capable", "improves_with_momentum"]
+        },
+        {
+          "text": "I'm quite comfortable; I enjoy sharing ideas and getting feedback",
+          "scores": {"social_preference": 0.8, "self_confidence": 0.8, "openness_to_feedback": 0.8},
+          "traits": ["confident_speaker", "extroverted", "engaged"]
+        },
+        {
+          "text": "I prefer one-on-one or small group discussions over large crowds",
+          "scores": {"social_preference": 0.4, "stress_sensitivity": 0.35, "analytical_thinking": 0.7},
+          "traits": ["selective_social", "introverted", "thoughtful"]
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "category": "risk_management",
+      "dimension_primary": "planning_tendency",
+      "dimension_secondary": "stress_sensitivity",
+      "question": "When you're running out of time in an exam and still have unattempted questions, what do you do?",
+      "options": [
+        {
+          "text": "I panic and try to rush through everything, often making careless mistakes",
+          "scores": {"planning_tendency": 0.1, "stress_sensitivity": 0.9, "resilience": 0.3},
+          "traits": ["poor_time_management", "panic_prone"]
+        },
+        {
+          "text": "I prioritize questions by difficulty and marks, attempting high-value ones first",
+          "scores": {"planning_tendency": 0.85, "analytical_thinking": 0.8, "stress_sensitivity": 0.2},
+          "traits": ["strategic", "composed", "smart_prioritizer"]
+        },
+        {
+          "text": "I continue with my original pace and try to complete as many as possible",
+          "scores": {"planning_tendency": 0.5, "stress_sensitivity": 0.4, "resilience": 0.6},
+          "traits": ["consistent", "focused", "steady"]
+        },
+        {
+          "text": "I skip around randomly, attempting whatever seems doable in the remaining time",
+          "scores": {"planning_tendency": 0.2, "stress_sensitivity": 0.6, "analytical_thinking": 0.25},
+          "traits": ["reactive", "scattered", "adaptive"]
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "category": "deep_thinking",
+      "dimension_primary": "analytical_thinking",
+      "dimension_secondary": "openness_to_feedback",
+      "question": "In a conceptual subject like physics, what appeals to you more?",
+      "options": [
+        {
+          "text": "Understanding the deep 'why' and how different concepts connect",
+          "scores": {"analytical_thinking": 0.9, "intrinsic_motivation": 0.85, "stress_sensitivity": 0.2},
+          "traits": ["deep_thinker", "conceptual", "connected"]
+        },
+        {
+          "text": "Learning the formulas and methods needed to solve problems",
+          "scores": {"analytical_thinking": 0.6, "planning_tendency": 0.8, "intrinsic_motivation": 0.4},
+          "traits": ["practical", "methods_focused"]
+        },
+        {
+          "text": "Memorizing concepts and rules to score well on exams",
+          "scores": {"analytical_thinking": 0.3, "intrinsic_motivation": 0.2, "planning_tendency": 0.7},
+          "traits": ["exam_focused", "memorizer"]
+        },
+        {
+          "text": "Exploring interesting applications and real-world relevance",
+          "scores": {"analytical_thinking": 0.7, "intrinsic_motivation": 0.8, "social_preference": 0.6},
+          "traits": ["practical_thinker", "applied_learner"]
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "category": "comparison_tendency",
+      "dimension_primary": "social_preference",
+      "dimension_secondary": "self_confidence",
+      "question": "How do you feel when you compare your performance with your peers?",
+      "options": [
+        {
+          "text": "I get discouraged if others are doing better; it makes me doubt myself",
+          "scores": {"self_confidence": 0.2, "stress_sensitivity": 0.75, "social_preference": 0.5},
+          "traits": ["comparative", "insecure", "competitive_anxiety"]
+        },
+        {
+          "text": "I use it as motivation to push harder and prove I can do better",
+          "scores": {"self_confidence": 0.7, "intrinsic_motivation": 0.6, "resilience": 0.75},
+          "traits": ["competitive", "motivated", "ambitious"]
+        },
+        {
+          "text": "I don't compare much; I focus on my own progress and goals",
+          "scores": {"intrinsic_motivation": 0.8, "stress_sensitivity": 0.3, "self_confidence": 0.75},
+          "traits": ["intrinsic_focused", "independent", "goal_oriented"]
+        },
+        {
+          "text": "I celebrate their success and we help each other improve",
+          "scores": {"social_preference": 0.8, "openness_to_feedback": 0.85, "resilience": 0.8},
+          "traits": ["collaborative", "secure", "growth_focused"]
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "category": "mistake_recovery",
+      "dimension_primary": "resilience",
+      "dimension_secondary": "openness_to_feedback",
+      "question": "When you make a conceptual mistake on a problem you thought you understood, how do you respond?",
+      "options": [
+        {
+          "text": "I get frustrated with myself and am reluctant to face similar problems",
+          "scores": {"resilience": 0.15, "openness_to_feedback": 0.2, "stress_sensitivity": 0.8},
+          "traits": ["self_critical", "avoidant", "frustrated"]
+        },
+        {
+          "text": "I immediately analyze what went wrong and understand the correct approach",
+          "scores": {"resilience": 0.85, "openness_to_feedback": 0.9, "analytical_thinking": 0.85},
+          "traits": ["quick_learner", "resilient", "analytical"]
+        },
+        {
+          "text": "I practice more problems of this type to prevent repeating the mistake",
+          "scores": {"resilience": 0.75, "planning_tendency": 0.8, "intrinsic_motivation": 0.5},
+          "traits": ["practitioner", "improvement_focused", "systematic"]
+        },
+        {
+          "text": "I move on; it was just one mistake and probably won't happen again",
+          "scores": {"resilience": 0.5, "openness_to_feedback": 0.3, "stress_sensitivity": 0.4},
+          "traits": ["dismissive", "minimizer", "optimistic"]
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "category": "external_pressure",
+      "dimension_primary": "stress_sensitivity",
+      "dimension_secondary": "planning_tendency",
+      "question": "How do you perform when there are multiple demands on your time (exams, projects, activities)?",
+      "options": [
+        {
+          "text": "I feel overwhelmed and struggle to manage everything effectively",
+          "scores": {"stress_sensitivity": 0.85, "planning_tendency": 0.2, "resilience": 0.25},
+          "traits": ["overwhelmed", "poor_management", "stressed"]
+        },
+        {
+          "text": "I prioritize tasks strategically and handle them one by one without stress",
+          "scores": {"planning_tendency": 0.9, "stress_sensitivity": 0.15, "self_confidence": 0.8},
+          "traits": ["organized", "composed", "capable"]
+        },
+        {
+          "text": "I work best under pressure and actually perform better when juggling multiple things",
+          "scores": {"stress_sensitivity": 0.2, "resilience": 0.85, "planning_tendency": 0.3},
+          "traits": ["pressure_thrives", "adaptable", "energized_by_challenge"]
+        },
+        {
+          "text": "I try to manage but often feel like something falls through the cracks",
+          "scores": {"planning_tendency": 0.5, "stress_sensitivity": 0.55, "resilience": 0.55},
+          "traits": ["trying", "imperfect_management", "moderate_stress"]
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "category": "interpersonal_conflict",
+      "dimension_primary": "openness_to_feedback",
+      "dimension_secondary": "social_preference",
+      "question": "If a classmate challenges your solution to a problem, how do you typically react?",
+      "options": [
+        {
+          "text": "I get defensive and insist my answer is correct without considering their perspective",
+          "scores": {"openness_to_feedback": 0.1, "self_confidence": 0.7, "analytical_thinking": 0.3},
+          "traits": ["defensive", "closed_minded"]
+        },
+        {
+          "text": "I listen to their reasoning, compare approaches, and determine who's right",
+          "scores": {"openness_to_feedback": 0.85, "analytical_thinking": 0.85, "social_preference": 0.6},
+          "traits": ["rational", "open", "collaborative"]
+        },
+        {
+          "text": "I feel nervous and doubt my answer, even if I'm pretty sure I'm right",
+          "scores": {"self_confidence": 0.3, "stress_sensitivity": 0.7, "openness_to_feedback": 0.4},
+          "traits": ["insecure", "easily_swayed"]
+        },
+        {
+          "text": "I'm open but cautious; I verify with a reference before accepting their critique",
+          "scores": {"openness_to_feedback": 0.7, "analytical_thinking": 0.75, "self_confidence": 0.65},
+          "traits": ["thoughtful", "verification_oriented", "balanced"]
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "category": "perfectionism",
+      "dimension_primary": "self_confidence",
+      "dimension_secondary": "stress_sensitivity",
+      "question": "How do you feel about scoring 95% instead of 100% on an exam?",
+      "options": [
+        {
+          "text": "I'm devastated; those 5 marks feel like a huge failure",
+          "scores": {"stress_sensitivity": 0.9, "self_confidence": 0.15, "resilience": 0.2},
+          "traits": ["perfectionist", "catastrophizer", "fragile"]
+        },
+        {
+          "text": "I'm satisfied; 95% is excellent and represents my effort well",
+          "scores": {"self_confidence": 0.85, "resilience": 0.8, "stress_sensitivity": 0.2},
+          "traits": ["confident", "realistic", "satisfied"]
+        },
+        {
+          "text": "I'm happy but I'd like to identify and fix those 5 mistakes for next time",
+          "scores": {"self_confidence": 0.75, "openness_to_feedback": 0.85, "intrinsic_motivation": 0.7},
+          "traits": ["growth_oriented", "learning_focused"]
+        },
+        {
+          "text": "I feel okay about it but wish I had prepared differently to avoid mistakes",
+          "scores": {"self_confidence": 0.6, "planning_tendency": 0.7, "stress_sensitivity": 0.4},
+          "traits": ["reflective", "planning_focused", "moderate"]
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "category": "help_seeking",
+      "dimension_primary": "social_preference",
+      "dimension_secondary": "openness_to_feedback",
+      "question": "When you're stuck on a concept for a long time, what do you typically do?",
+      "options": [
+        {
+          "text": "I keep struggling alone; asking for help feels like admitting defeat",
+          "scores": {"social_preference": 0.1, "self_confidence": 0.5, "stress_sensitivity": 0.7},
+          "traits": ["independent_to_fault", "prideful", "isolated"]
+        },
+        {
+          "text": "I try several different approaches, then ask a friend or teacher for guidance",
+          "scores": {"social_preference": 0.6, "openness_to_feedback": 0.75, "resilience": 0.75},
+          "traits": ["balanced", "persistent", "seeking_help"]
+        },
+        {
+          "text": "I immediately ask for help; collaboration is faster and more efficient",
+          "scores": {"social_preference": 0.85, "intrinsic_motivation": 0.6, "openness_to_feedback": 0.8},
+          "traits": ["collaborative", "pragmatic", "help_seeker"]
+        },
+        {
+          "text": "I look up solutions online or in reference books instead of asking people",
+          "scores": {"social_preference": 0.2, "analytical_thinking": 0.7, "planning_tendency": 0.6},
+          "traits": ["independent_learner", "resource_oriented"]
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "category": "success_attribution",
+      "dimension_primary": "resilience",
+      "dimension_secondary": "self_confidence",
+      "question": "When you do exceptionally well on an exam, what do you attribute it to?",
+      "options": [
+        {
+          "text": "Luck or the exam being easier than expected",
+          "scores": {"self_confidence": 0.2, "resilience": 0.3, "stress_sensitivity": 0.6},
+          "traits": ["externally_attributed", "unstable_confidence"]
+        },
+        {
+          "text": "My hard work, preparation, and understanding of the concepts",
+          "scores": {"self_confidence": 0.85, "intrinsic_motivation": 0.8, "resilience": 0.8},
+          "traits": ["internally_attributed", "confident", "effort_oriented"]
+        },
+        {
+          "text": "A combination of my effort and some favorable circumstances",
+          "scores": {"self_confidence": 0.7, "resilience": 0.75, "openness_to_feedback": 0.65},
+          "traits": ["balanced_attribution", "realistic"]
+        },
+        {
+          "text": "My natural ability and intelligence",
+          "scores": {"self_confidence": 0.8, "analytical_thinking": 0.7, "openness_to_feedback": 0.3},
+          "traits": ["ability_focused", "fixed_mindset"]
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "category": "creativity_preference",
+      "dimension_primary": "analytical_thinking",
+      "dimension_secondary": "intrinsic_motivation",
+      "question": "When solving problems, do you prefer following established methods or finding creative solutions?",
+      "options": [
+        {
+          "text": "Strictly follow established methods; that's the safest and most efficient way",
+          "scores": {"analytical_thinking": 0.5, "planning_tendency": 0.85, "stress_sensitivity": 0.3},
+          "traits": ["conventional", "rule_follower", "risk_averse"]
+        },
+        {
+          "text": "Mix of both - follow standards but adapt them based on the specific problem",
+          "scores": {"analytical_thinking": 0.75, "resilience": 0.75, "intrinsic_motivation": 0.6},
+          "traits": ["balanced", "flexible", "pragmatic"]
+        },
+        {
+          "text": "I love finding unique approaches and non-standard solutions",
+          "scores": {"analytical_thinking": 0.8, "intrinsic_motivation": 0.9, "self_confidence": 0.85},
+          "traits": ["creative", "innovative", "unconventional"]
+        },
+        {
+          "text": "Whatever works fastest; I don't care about the method",
+          "scores": {"planning_tendency": 0.2, "intrinsic_motivation": 0.2, "stress_sensitivity": 0.5},
+          "traits": ["pragmatic", "results_focused", "uninterested_in_process"]
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "category": "long_term_vision",
+      "dimension_primary": "intrinsic_motivation",
+      "dimension_secondary": "planning_tendency",
+      "question": "Why are you taking JEE/NEET? What's the broader goal?",
+      "options": [
+        {
+          "text": "I want a high rank because it matters for my career and admission to top colleges",
+          "scores": {"intrinsic_motivation": 0.5, "self_confidence": 0.7, "planning_tendency": 0.8},
+          "traits": ["goal_oriented", "practical", "career_focused"]
+        },
+        {
+          "text": "I'm passionate about engineering/medicine and want to master the fundamentals",
+          "scores": {"intrinsic_motivation": 0.9, "analytical_thinking": 0.8, "stress_sensitivity": 0.25},
+          "traits": ["passionate", "purpose_driven", "mastery_oriented"]
+        },
+        {
+          "text": "Family expectations; I need to score well to meet their standards",
+          "scores": {"intrinsic_motivation": 0.15, "stress_sensitivity": 0.8, "self_confidence": 0.35},
+          "traits": ["external_pressure", "family_driven", "anxious"]
+        },
+        {
+          "text": "Combination - I want admission to a good college AND genuinely interested in the field",
+          "scores": {"intrinsic_motivation": 0.7, "planning_tendency": 0.75, "resilience": 0.75},
+          "traits": ["balanced_motivation", "purposeful"]
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "category": "stress_management",
+      "dimension_primary": "stress_sensitivity",
+      "dimension_secondary": "resilience",
+      "question": "How do you typically manage stress during peak exam season?",
+      "options": [
+        {
+          "text": "I get very stressed and struggle to focus; I often feel paralyzed",
+          "scores": {"stress_sensitivity": 0.9, "resilience": 0.15, "planning_tendency": 0.2},
+          "traits": ["overwhelmed", "stressed_management_poor"]
+        },
+        {
+          "text": "I take breaks, exercise, sleep well, and maintain healthy habits",
+          "scores": {"stress_sensitivity": 0.25, "resilience": 0.85, "planning_tendency": 0.8},
+          "traits": ["self_care_oriented", "balanced", "healthy"]
+        },
+        {
+          "text": "I work through the stress; taking breaks feels like wasting time",
+          "scores": {"planning_tendency": 0.8, "stress_sensitivity": 0.6, "resilience": 0.5},
+          "traits": ["driven", "workaholic", "stressed_but_managing"]
+        },
+        {
+          "text": "I talk to friends and family, which helps me feel supported",
+          "scores": {"social_preference": 0.8, "resilience": 0.7, "stress_sensitivity": 0.4},
+          "traits": ["socially_supported", "expressive", "connected"]
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "category": "decision_making",
+      "dimension_primary": "analytical_thinking",
+      "dimension_secondary": "planning_tendency",
+      "question": "When choosing between two study approaches, how do you decide?",
+      "options": [
+        {
+          "text": "I analyze pros/cons, consider my learning style, and pick the optimal one",
+          "scores": {"analytical_thinking": 0.85, "planning_tendency": 0.85, "openness_to_feedback": 0.75},
+          "traits": ["analytical_decider", "thoughtful", "strategic"]
+        },
+        {
+          "text": "I use whichever my friends use or my teacher recommends",
+          "scores": {"social_preference": 0.75, "analytical_thinking": 0.3, "openness_to_feedback": 0.8},
+          "traits": ["socially_influenced", "trusting"]
+        },
+        {
+          "text": "I trust my intuition and go with whatever feels right",
+          "scores": {"analytical_thinking": 0.4, "stress_sensitivity": 0.5, "intrinsic_motivation": 0.6},
+          "traits": ["intuitive", "spontaneous"]
+        },
+        {
+          "text": "I overthink and keep changing my mind; I struggle to commit",
+          "scores": {"analytical_thinking": 0.8, "stress_sensitivity": 0.8, "planning_tendency": 0.5},
+          "traits": ["overthinker", "indecisive", "anxious"]
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "category": "routine_preference",
+      "dimension_primary": "planning_tendency",
+      "dimension_secondary": "stress_sensitivity",
+      "question": "What type of study routine works best for you?",
+      "options": [
+        {
+          "text": "Strict, fixed routine every day at the same time",
+          "scores": {"planning_tendency": 0.9, "stress_sensitivity": 0.25, "resilience": 0.75},
+          "traits": ["structured", "disciplined", "consistent"]
+        },
+        {
+          "text": "Flexible routine; I adjust based on my energy and the day's demands",
+          "scores": {"planning_tendency": 0.5, "stress_sensitivity": 0.4, "resilience": 0.7},
+          "traits": ["flexible", "adaptive", "responsive"]
+        },
+        {
+          "text": "No routine; I study whenever I feel motivated",
+          "scores": {"planning_tendency": 0.1, "intrinsic_motivation": 0.6, "stress_sensitivity": 0.6},
+          "traits": ["unstructured", "motivation_dependent", "spontaneous"]
+        },
+        {
+          "text": "Strict at first but I often break the routine and feel guilty about it",
+          "scores": {"planning_tendency": 0.6, "stress_sensitivity": 0.65, "resilience": 0.4},
+          "traits": ["inconsistent", "guilty", "struggle_with_discipline"]
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "category": "collaboration_preference",
+      "dimension_primary": "social_preference",
+      "dimension_secondary": "openness_to_feedback",
+      "question": "In a group project, what role do you naturally take?",
+      "options": [
+        {
+          "text": "I prefer working alone; group projects are frustrating and slow",
+          "scores": {"social_preference": 0.1, "stress_sensitivity": 0.6, "self_confidence": 0.6},
+          "traits": ["independent", "skeptical_of_groups"]
+        },
+        {
+          "text": "I take a leadership role, organizing work and ensuring quality",
+          "scores": {"social_preference": 0.7, "self_confidence": 0.85, "planning_tendency": 0.85},
+          "traits": ["leader", "organizer", "quality_focused"]
+        },
+        {
+          "text": "I contribute equally, share ideas, and adapt to group decisions",
+          "scores": {"social_preference": 0.8, "openness_to_feedback": 0.8, "resilience": 0.75},
+          "traits": ["collaborator", "team_player", "flexible"]
+        },
+        {
+          "text": "I do my part but let others lead; I follow rather than guide",
+          "scores": {"social_preference": 0.6, "self_confidence": 0.4, "planning_tendency": 0.5},
+          "traits": ["follower", "contributor", "non_leading"]
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "category": "emotional_regulation",
+      "dimension_primary": "stress_sensitivity",
+      "dimension_secondary": "resilience",
+      "question": "When you're frustrated or angry, how do you handle it?",
+      "options": [
+        {
+          "text": "I get very emotional, sometimes cry, and can't focus for hours",
+          "scores": {"stress_sensitivity": 0.9, "resilience": 0.15, "self_confidence": 0.2},
+          "traits": ["emotionally_reactive", "low_regulation"]
+        },
+        {
+          "text": "I acknowledge the feeling, take a break, then return to the task calmly",
+          "scores": {"resilience": 0.85, "stress_sensitivity": 0.25, "openness_to_feedback": 0.75},
+          "traits": ["emotionally_intelligent", "self_aware", "regulated"]
+        },
+        {
+          "text": "I push through it and ignore the emotion to stay productive",
+          "scores": {"planning_tendency": 0.8, "stress_sensitivity": 0.3, "resilience": 0.6},
+          "traits": ["stoic", "pushing_through", "emotionally_suppressive"]
+        },
+        {
+          "text": "I vent to someone - talking helps me feel better",
+          "scores": {"social_preference": 0.8, "resilience": 0.7, "stress_sensitivity": 0.5},
+          "traits": ["expressive", "socially_supported", "processor"]
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "category": "ambition_level",
+      "dimension_primary": "intrinsic_motivation",
+      "dimension_secondary": "self_confidence",
+      "question": "What's your level of ambition for your career/life?",
+      "options": [
+        {
+          "text": "Very ambitious - I want to be among the top in my field and achieve significant success",
+          "scores": {"intrinsic_motivation": 0.8, "self_confidence": 0.85, "stress_sensitivity": 0.4},
+          "traits": ["highly_ambitious", "driven", "success_oriented"]
+        },
+        {
+          "text": "Moderately ambitious - I want a good career but not at the expense of personal life",
+          "scores": {"intrinsic_motivation": 0.6, "self_confidence": 0.7, "resilience": 0.75},
+          "traits": ["balanced_ambition", "realistic", "life_balance_focused"]
+        },
+        {
+          "text": "Not particularly - I just want a stable job and decent income",
+          "scores": {"intrinsic_motivation": 0.3, "stress_sensitivity": 0.3, "planning_tendency": 0.6},
+          "traits": ["practical", "stable_focused", "low_ambition"]
+        },
+        {
+          "text": "I'm unsure yet; I'm exploring what I want",
+          "scores": {"planning_tendency": 0.4, "self_confidence": 0.5, "intrinsic_motivation": 0.5},
+          "traits": ["exploring", "uncertain", "open"]
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "category": "relationship_style",
+      "dimension_primary": "social_preference",
+      "dimension_secondary": "openness_to_feedback",
+      "question": "In a mentor relationship, what matters most to you?",
+      "options": [
+        {
+          "text": "I prefer independent learning; I find mentors controlling or limiting",
+          "scores": {"social_preference": 0.15, "self_confidence": 0.7, "planning_tendency": 0.65},
+          "traits": ["independent", "resists_guidance"]
+        },
+        {
+          "text": "Regular feedback, honest advice, and someone who challenges me to grow",
+          "scores": {"openness_to_feedback": 0.9, "social_preference": 0.7, "intrinsic_motivation": 0.85},
+          "traits": ["feedback_seeker", "growth_oriented", "collaborative"]
+        },
+        {
+          "text": "Emotional support and encouragement more than technical guidance",
+          "scores": {"social_preference": 0.8, "stress_sensitivity": 0.6, "resilience": 0.7},
+          "traits": ["support_seeking", "emotionally_oriented"]
+        },
+        {
+          "text": "Someone who's achieved what I aspire to and can show me the way",
+          "scores": {"self_confidence": 0.6, "social_preference": 0.6, "intrinsic_motivation": 0.7},
+          "traits": ["role_model_seeking", "practical_learning"]
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "category": "self_reflection",
+      "dimension_primary": "openness_to_feedback",
+      "dimension_secondary": "intrinsic_motivation",
+      "question": "How often do you reflect on your learning process and adjust your strategies?",
+      "options": [
+        {
+          "text": "Rarely; I do what works and don't overthink it",
+          "scores": {"openness_to_feedback": 0.2, "intrinsic_motivation": 0.3, "analytical_thinking": 0.3},
+          "traits": ["non_reflective", "pragmatic", "static"]
+        },
+        {
+          "text": "Sometimes; I reflect after major exams or when something goes wrong",
+          "scores": {"openness_to_feedback": 0.5, "intrinsic_motivation": 0.5, "resilience": 0.6},
+          "traits": ["reactive_reflection", "event_triggered"]
+        },
+        {
+          "text": "Regularly; I track what's working and adjust weekly or bi-weekly",
+          "scores": {"openness_to_feedback": 0.8, "planning_tendency": 0.85, "intrinsic_motivation": 0.7},
+          "traits": ["reflective", "iterative", "continuous_improver"]
+        },
+        {
+          "text": "Constantly; I'm always analyzing and tweaking my approach",
+          "scores": {"openness_to_feedback": 0.9, "analytical_thinking": 0.85, "stress_sensitivity": 0.6},
+          "traits": ["meta_learner", "overthinking_tendency", "optimization_focused"]
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "category": "adversity_seeking",
+      "dimension_primary": "resilience",
+      "dimension_secondary": "self_confidence",
+      "question": "How do you feel about facing very difficult, potentially unsolvable problems?",
+      "options": [
+        {
+          "text": "I avoid them; they're demoralizing and waste my time",
+          "scores": {"resilience": 0.1, "self_confidence": 0.2, "stress_sensitivity": 0.85},
+          "traits": ["adversity_avoidant", "risk_averse"]
+        },
+        {
+          "text": "I tackle them cautiously but don't pursue them if they seem too hard",
+          "scores": {"resilience": 0.5, "self_confidence": 0.5, "stress_sensitivity": 0.5},
+          "traits": ["cautious", "moderate_challenge_seeking"]
+        },
+        {
+          "text": "I actually enjoy them; they're where I learn the most",
+          "scores": {"resilience": 0.9, "self_confidence": 0.85, "intrinsic_motivation": 0.85},
+          "traits": ["challenge_seeker", "growth_oriented", "resilient"]
+        },
+        {
+          "text": "I face them because I have to, not because I enjoy them",
+          "scores": {"resilience": 0.65, "self_confidence": 0.6, "stress_sensitivity": 0.5},
+          "traits": ["dutiful", "capable", "not_passionate"]
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "category": "life_balance",
+      "dimension_primary": "planning_tendency",
+      "dimension_secondary": "resilience",
+      "question": "How do you balance studies with other aspects of life (hobbies, social life, health)?",
+      "options": [
+        {
+          "text": "Studies come first; I sacrifice everything else to score well",
+          "scores": {"planning_tendency": 0.8, "stress_sensitivity": 0.8, "resilience": 0.4},
+          "traits": ["studies_first", "unbalanced", "sacrificing"]
+        },
+        {
+          "text": "I try to balance but often feel like I'm neglecting one area",
+          "scores": {"planning_tendency": 0.5, "stress_sensitivity": 0.6, "resilience": 0.6},
+          "traits": ["struggling_balance", "guilty", "imperfect"]
+        },
+        {
+          "text": "I maintain a healthy balance; personal well-being supports academic success",
+          "scores": {"resilience": 0.85, "planning_tendency": 0.75, "stress_sensitivity": 0.2},
+          "traits": ["balanced", "holistic", "healthy_mindset"]
+        },
+        {
+          "text": "I don't study much; I prioritize enjoying life over academics",
+          "scores": {"planning_tendency": 0.1, "intrinsic_motivation": 0.2, "stress_sensitivity": 0.3},
+          "traits": ["life_focused", "unmotivated", "hedonistic"]
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "category": "impulsivity_test_behavior",
+      "question": "During an exam, when you see a question that seems easy, what do you do?",
+      "options": [
+        {
+          "text": "I immediately write my answer without double-checking",
+          "scores": {"impulsivity": 0.95, "analytical_thinking": 0.1, "planning_tendency": 0.05},
+          "traits": ["impulsive", "rushed", "risky"]
+        },
+        {
+          "text": "I solve it quickly but spend a moment verifying my logic",
+          "scores": {"impulsivity": 0.3, "analytical_thinking": 0.85, "planning_tendency": 0.7},
+          "traits": ["efficient", "balanced", "quick_but_careful"]
+        },
+        {
+          "text": "I'm suspicious of easy questions; I recheck multiple times",
+          "scores": {"impulsivity": 0.1, "analytical_thinking": 0.95, "stress_sensitivity": 0.7},
+          "traits": ["thorough", "cautious", "overthinking"]
+        },
+        {
+          "text": "I solve it, check once, and move on",
+          "scores": {"impulsivity": 0.2, "planning_tendency": 0.8, "stress_sensitivity": 0.25},
+          "traits": ["composed", "strategic", "time_conscious"]
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "category": "time_awareness",
+      "question": "How accurate is your sense of time during an exam?",
+      "options": [
+        {
+          "text": "I'm shocked when told '5 minutes left'",
+          "scores": {"time_awareness": 0.1, "planning_tendency": 0.2, "stress_sensitivity": 0.8},
+          "traits": ["poor_time_sense", "rushed_at_end", "anxious"]
+        },
+        {
+          "text": "Rough sense but sometimes lose track",
+          "scores": {"time_awareness": 0.4, "planning_tendency": 0.5, "analytical_thinking": 0.5},
+          "traits": ["approximate_awareness", "imperfect_tracking"]
+        },
+        {
+          "text": "I regularly check and adjust pace",
+          "scores": {"time_awareness": 0.8, "planning_tendency": 0.85, "stress_sensitivity": 0.2},
+          "traits": ["aware", "adaptive", "strategic"]
+        },
+        {
+          "text": "I know exactly without checking",
+          "scores": {"time_awareness": 0.95, "resilience": 0.9, "self_confidence": 0.8},
+          "traits": ["internal_clock", "composed"]
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "category": "distraction_resistance",
+      "question": "During a long study session, what usually interrupts your focus?",
+      "options": [
+        {
+          "text": "Everything - notifications, noise, thoughts, anything",
+          "scores": {"distraction_resistance": 0.05, "planning_tendency": 0.1, "stress_sensitivity": 0.7},
+          "traits": ["highly_distracted", "scattered_focus"]
+        },
+        {
+          "text": "Sometimes distracted but usually pull back",
+          "scores": {"distraction_resistance": 0.4, "resilience": 0.6, "self_confidence": 0.5},
+          "traits": ["effort_based_focus", "inconsistent"]
+        },
+        {
+          "text": "Occasional distractions but maintain good focus",
+          "scores": {"distraction_resistance": 0.75, "planning_tendency": 0.8, "intrinsic_motivation": 0.7},
+          "traits": ["focused", "purposeful"]
+        },
+        {
+          "text": "Rarely distracted; enter flow state easily",
+          "scores": {"distraction_resistance": 0.95, "intrinsic_motivation": 0.85, "self_confidence": 0.85},
+          "traits": ["deep_focus", "flow_state"]
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "category": "stress_time_pressure",
+      "question": "How do you perform when time is running out?",
+      "options": [
+        {
+          "text": "I panic and make careless mistakes",
+          "scores": {"stress_sensitivity": 0.95, "impulsivity": 0.8, "resilience": 0.1},
+          "traits": ["pressure_vulnerable", "panic_prone"]
+        },
+        {
+          "text": "I become more careful and focused",
+          "scores": {"stress_sensitivity": 0.2, "planning_tendency": 0.9, "resilience": 0.9},
+          "traits": ["thrives_on_pressure", "strategic"]
+        },
+        {
+          "text": "I feel pressure but manage it",
+          "scores": {"stress_sensitivity": 0.4, "planning_tendency": 0.75, "impulsivity": 0.3},
+          "traits": ["balanced_pressure", "resilient"]
+        },
+        {
+          "text": "Time pressure doesn't affect me",
+          "scores": {"stress_sensitivity": 0.15, "planning_tendency": 0.6, "impulsivity": 0.3},
+          "traits": ["self_paced", "confident"]
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "category": "question_selection_strategy",
+      "question": "How do you decide which questions to attempt first?",
+      "options": [
+        {
+          "text": "Start from beginning and go in order",
+          "scores": {"impulsivity": 0.7, "planning_tendency": 0.3, "analytical_thinking": 0.2},
+          "traits": ["sequential", "rigid"]
+        },
+        {
+          "text": "Quickly scan and rate by difficulty/marks",
+          "scores": {"analytical_thinking": 0.9, "planning_tendency": 0.85, "time_awareness": 0.8},
+          "traits": ["strategic", "time_conscious"]
+        },
+        {
+          "text": "Do easy ones first to build confidence",
+          "scores": {"planning_tendency": 0.7, "self_confidence": 0.5, "resilience": 0.6},
+          "traits": ["confidence_building", "safe_approach"]
+        },
+        {
+          "text": "Attempt based on mood",
+          "scores": {"impulsivity": 0.8, "planning_tendency": 0.1, "self_confidence": 0.4},
+          "traits": ["mood_driven", "chaotic"]
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "category": "focus_strategy",
+      "question": "What strategies do you use to maintain focus?",
+      "options": [
+        {
+          "text": "No specific strategies; just willpower",
+          "scores": {"distraction_resistance": 0.2, "planning_tendency": 0.1, "resilience": 0.4},
+          "traits": ["willpower_dependent", "unstructured"]
+        },
+        {
+          "text": "Phone off, quiet room, study space",
+          "scores": {"planning_tendency": 0.85, "distraction_resistance": 0.8, "self_confidence": 0.75},
+          "traits": ["proactive", "intentional"]
+        },
+        {
+          "text": "Pomodoro technique - 25min focus, 5min break",
+          "scores": {"planning_tendency": 0.9, "distraction_resistance": 0.85, "analytical_thinking": 0.75},
+          "traits": ["systematic", "disciplined"]
+        },
+        {
+          "text": "Study at different locations based on mood",
+          "scores": {"planning_tendency": 0.3, "impulsivity": 0.6, "distraction_resistance": 0.5},
+          "traits": ["flexible", "variable_effectiveness"]
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "category": "deadline_response",
+      "question": "How do you respond to approaching deadlines?",
+      "options": [
+        {
+          "text": "Only start when urgent; pressure is my motivator",
+          "scores": {"time_awareness": 0.3, "planning_tendency": 0.05, "stress_sensitivity": 0.75},
+          "traits": ["deadline_driven", "procrastinator"]
+        },
+        {
+          "text": "Start early but accelerate as deadline approaches",
+          "scores": {"planning_tendency": 0.6, "time_awareness": 0.5, "impulsivity": 0.4},
+          "traits": ["early_starter", "accelerates_late"]
+        },
+        {
+          "text": "Work consistently throughout timeline",
+          "scores": {"planning_tendency": 0.9, "time_awareness": 0.8, "stress_sensitivity": 0.2},
+          "traits": ["consistent", "stress_managed"]
+        },
+        {
+          "text": "Prefer time flexibility; tight deadlines stress me",
+          "scores": {"time_awareness": 0.6, "stress_sensitivity": 0.8, "planning_tendency": 0.5},
+          "traits": ["prefers_slack", "anxious"]
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "category": "decision_style",
+      "question": "When faced with multiple study options, what happens?",
+      "options": [
+        {
+          "text": "Pick immediately; endless deliberation wastes time",
+          "scores": {"impulsivity": 0.9, "planning_tendency": 0.2, "stress_sensitivity": 0.2},
+          "traits": ["quick_decider", "action_biased"]
+        },
+        {
+          "text": "Analyze briefly then decide and commit",
+          "scores": {"analytical_thinking": 0.75, "planning_tendency": 0.7, "impulsivity": 0.3},
+          "traits": ["balanced_decider"]
+        },
+        {
+          "text": "Weigh pros/cons systematically",
+          "scores": {"analytical_thinking": 0.95, "planning_tendency": 0.85, "stress_sensitivity": 0.5},
+          "traits": ["thorough_decider", "systematic"]
+        },
+        {
+          "text": "Often struggle to decide; second-guess myself",
+          "scores": {"stress_sensitivity": 0.8, "analytical_thinking": 0.7, "impulsivity": 0.3},
+          "traits": ["indecisive", "doubt_prone"]
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "category": "attention_span",
+      "question": "How long can you maintain deep, focused study?",
+      "options": [
+        {
+          "text": "Less than 30 minutes",
+          "scores": {"distraction_resistance": 0.1, "resilience": 0.2, "stress_sensitivity": 0.6},
+          "traits": ["low_endurance", "limited_focus"]
+        },
+        {
+          "text": "About 60 minutes",
+          "scores": {"distraction_resistance": 0.5, "resilience": 0.5, "analytical_thinking": 0.5},
+          "traits": ["moderate_endurance"]
+        },
+        {
+          "text": "2-3 hours with good quality",
+          "scores": {"distraction_resistance": 0.75, "resilience": 0.75, "planning_tendency": 0.8},
+          "traits": ["good_endurance", "sustainable_pace"]
+        },
+        {
+          "text": "4+ hours easily; enter flow state",
+          "scores": {"distraction_resistance": 0.95, "resilience": 0.9, "intrinsic_motivation": 0.9},
+          "traits": ["high_endurance", "flow_state"]
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "category": "mistake_pattern",
+      "question": "After mistakes, do you identify patterns?",
+      "options": [
+        {
+          "text": "Don't analyze; mistakes just happen",
+          "scores": {"analytical_thinking": 0.2, "openness_to_feedback": 0.1, "resilience": 0.4},
+          "traits": ["dismissive", "non_analytical"]
+        },
+        {
+          "text": "Recognize but don't investigate root cause",
+          "scores": {"analytical_thinking": 0.4, "openness_to_feedback": 0.3, "resilience": 0.5},
+          "traits": ["surface_level"]
+        },
+        {
+          "text": "Identify and understand why",
+          "scores": {"analytical_thinking": 0.85, "openness_to_feedback": 0.8, "intrinsic_motivation": 0.7},
+          "traits": ["causal_thinker", "growth_focused"]
+        },
+        {
+          "text": "Deeply analyze patterns across mistakes",
+          "scores": {"analytical_thinking": 0.95, "openness_to_feedback": 0.9, "resilience": 0.85},
+          "traits": ["systematic_improver", "meta_learner"]
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "category": "environmental_adaptation",
+      "question": "How well do you adapt to different exam types?",
+      "options": [
+        {
+          "text": "Same approach regardless",
+          "scores": {"planning_tendency": 0.3, "analytical_thinking": 0.2},
+          "traits": ["rigid", "one_size_fits_all"]
+        },
+        {
+          "text": "Minor adjustments but mostly consistent",
+          "scores": {"planning_tendency": 0.5, "analytical_thinking": 0.4, "impulsivity": 0.6},
+          "traits": ["conservative_adjuster"]
+        },
+        {
+          "text": "Analyze exam type and adjust prep",
+          "scores": {"analytical_thinking": 0.8, "planning_tendency": 0.8, "resilience": 0.75},
+          "traits": ["adaptive", "strategic"]
+        },
+        {
+          "text": "Highly adaptive; detailed pattern analysis",
+          "scores": {"analytical_thinking": 0.95, "planning_tendency": 0.9, "openness_to_feedback": 0.85},
+          "traits": ["highly_adaptive", "strategic_optimizer"]
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "category": "confidence_stability",
+      "question": "How stable is your self-confidence?",
+      "options": [
+        {
+          "text": "Varies wildly; great one day, terrible the next",
+          "scores": {"self_confidence": 0.2, "stress_sensitivity": 0.8, "resilience": 0.25},
+          "traits": ["unstable_confidence", "moody"]
+        },
+        {
+          "text": "Generally stable but dips after poor performance",
+          "scores": {"self_confidence": 0.55, "resilience": 0.5, "stress_sensitivity": 0.5},
+          "traits": ["performance_reactive"]
+        },
+        {
+          "text": "Quite stable; individual results don't shake me",
+          "scores": {"self_confidence": 0.8, "resilience": 0.8, "stress_sensitivity": 0.25},
+          "traits": ["steady", "resilient"]
+        },
+        {
+          "text": "Unwavering regardless of outcomes",
+          "scores": {"self_confidence": 0.95, "resilience": 0.95, "stress_sensitivity": 0.05},
+          "traits": ["rock_solid", "unshakeable"]
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "category": "goal_clarity",
+      "question": "How clear are your study goals?",
+      "options": [
+        {
+          "text": "Vague - just want to 'do well'",
+          "scores": {"planning_tendency": 0.1, "intrinsic_motivation": 0.2, "analytical_thinking": 0.2},
+          "traits": ["unclear_goals", "drifting"]
+        },
+        {
+          "text": "General targets but not specific metrics",
+          "scores": {"planning_tendency": 0.4, "intrinsic_motivation": 0.4, "analytical_thinking": 0.4},
+          "traits": ["general_focus"]
+        },
+        {
+          "text": "Specific goals: 85% in physics, 50 problems daily",
+          "scores": {"planning_tendency": 0.85, "intrinsic_motivation": 0.7, "analytical_thinking": 0.75},
+          "traits": ["specific_goals", "tracking_oriented"]
+        },
+        {
+          "text": "Detailed goals with milestones and contingency plans",
+          "scores": {"planning_tendency": 0.95, "intrinsic_motivation": 0.85, "analytical_thinking": 0.9},
+          "traits": ["strategic", "comprehensive_planning"]
+        }
+      ]
+    },
+    {
+      "id": 44,
+      "category": "wellness_balance",
+      "question": "How do you maintain health during exam prep?",
+      "options": [
+        {
+          "text": "Neglect sleep and health; studies first",
+          "scores": {"planning_tendency": 0.8, "resilience": 0.3, "stress_sensitivity": 0.8},
+          "traits": ["sacrificing_health", "burnout_prone"]
+        },
+        {
+          "text": "Know health matters but sacrifice during crunch",
+          "scores": {"planning_tendency": 0.5, "resilience": 0.5, "stress_sensitivity": 0.6},
+          "traits": ["situational_sacrifice"]
+        },
+        {
+          "text": "Maintain sleep, exercise, nutrition",
+          "scores": {"planning_tendency": 0.85, "resilience": 0.85, "self_confidence": 0.8},
+          "traits": ["balanced", "health_conscious"]
+        },
+        {
+          "text": "Health optimization is part of strategy",
+          "scores": {"planning_tendency": 0.95, "intrinsic_motivation": 0.8, "analytical_thinking": 0.8},
+          "traits": ["optimization_focused", "holistic"]
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "category": "growth_belief",
+      "question": "How do you view improvement in difficult subjects?",
+      "options": [
+        {
+          "text": "Some subjects just aren't for me",
+          "scores": {"intrinsic_motivation": 0.1, "self_confidence": 0.2, "openness_to_feedback": 0.15},
+          "traits": ["fixed_mindset", "resigned"]
+        },
+        {
+          "text": "Can improve with effort, but some are naturally better",
+          "scores": {"intrinsic_motivation": 0.5, "openness_to_feedback": 0.5, "resilience": 0.5},
+          "traits": ["growth_mindset_partial"]
+        },
+        {
+          "text": "With effort and strategies, can master any topic",
+          "scores": {"intrinsic_motivation": 0.85, "openness_to_feedback": 0.8, "resilience": 0.8},
+          "traits": ["growth_mindset", "effort_believer"]
+        },
+        {
+          "text": "Seek challenging topics as growth opportunities",
+          "scores": {"intrinsic_motivation": 0.95, "resilience": 0.9, "openness_to_feedback": 0.95},
+          "traits": ["challenge_seeker", "continuous_learner"]
+        }
+      ]
+    }
+  ]
+}

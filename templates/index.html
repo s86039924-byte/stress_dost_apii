@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stress Dost - Psychological Stress Assessment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --bg: #f8f9fa;
+            --surface: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+        }
+
+        html, body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Personality Assessment Screen */
+        .assessment-screen {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .assessment-wrapper {
+            width: 100%;
+            max-width: 720px;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .assessment-header {
+            text-align: center;
+            color: #1f2937;
+            margin-bottom: 30px;
+        }
+
+        .assessment-header h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #111827;
+        }
+
+        .assessment-header p {
+            font-size: 1.05em;
+            color: #4b5563;
+        }
+
+        .assessment-questions {
+            position: relative;
+            min-height: 280px;
+        }
+
+        .assessment-question {
+            display: none;
+        }
+
+        .assessment-question.active {
+            display: block;
+            animation: slideIn 0.3s ease-in-out;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .assessment-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #fff;
+            gap: 12px;
+        }
+
+        .assessment-option input[type="radio"] {
+            accent-color: #6366f1;
+        }
+
+        .assessment-option:hover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .assessment-option.selected {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.11);
+        }
+
+        .assessment-progress {
+            margin: 25px 0 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #6366f1;
+            width: 0;
+            transition: width 0.3s ease;
+        }
+
+        #progress-text {
+            text-align: center;
+            font-size: 0.95em;
+            color: #4b5563;
+            margin-top: 8px;
+        }
+
+        #submit-personality-btn {
+            margin-top: 25px;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05em;
+            font-weight: 600;
+            background: #4f46e5;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        #submit-personality-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* Main Layout */
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        /* Question Container */
+        .question-container {
+            margin-bottom: 30px;
+        }
+
+        /* Question Header */
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .question-meta {
+            flex: 1;
+        }
+
+        .question-number {
+            font-size: 0.95em;
+            color: var(--text-light);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .question-info {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-subject {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary);
+        }
+
+        .badge-difficulty {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        .badge-chapter {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .time-tracker {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        /* Question Display Area */
+        .question-display {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            margin-bottom: 25px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-text-wrapper {
+            margin-bottom: 25px;
+        }
+
+        .question-text {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: var(--text);
+            margin-bottom: 15px;
+        }
+
+        .question-text math {
+            font-size: 1em;
+            display: inline;
+        }
+
+        .question-text h3 {
+            margin: 10px 0;
+            font-size: 1.05em;
+        }
+
+        .question-text p {
+            margin: 8px 0;
+        }
+
+        /* Question Images */
+        .question-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .question-images img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        /* Options Section */
+        .options-section {
+            margin: 25px 0;
+            padding: 20px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1em;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .option:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .option.selected::before {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .option.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .option.incorrect {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .option-label {
+            font-weight: 600;
+            min-width: 30px;
+            color: var(--primary);
+        }
+
+        .option-text {
+            flex: 1;
+        }
+
+        /* Metadata Display */
+        .question-metadata {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .question-metadata details {
+            cursor: pointer;
+        }
+
+        .question-metadata summary {
+            color: var(--text-light);
+            font-size: 0.9em;
+            font-weight: 500;
+            padding: 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .question-metadata summary:hover {
+            background: var(--bg);
+        }
+
+        .metadata-content {
+            padding: 12px 0;
+            font-size: 0.9em;
+            color: var(--text-light);
+        }
+
+        .metadata-content p {
+            margin: 6px 0;
+        }
+
+        /* Button Section */
+        .button-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-block {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-skip {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-skip:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+
+        .btn-end {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-end:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        /* Sidebar - Stress Meters */
+        .sidebar {
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .stress-meters {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .stress-meters h3 {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .meter {
+            margin-bottom: 20px;
+        }
+
+        .meter-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .meter-label span:first-child {
+            font-size: 1.2em;
+        }
+
+        .meter-label span:last-child {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .meter-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .meter-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .meter-fear .meter-fill {
+            background: var(--danger);
+        }
+
+        .meter-thoughts .meter-fill {
+            background: var(--primary);
+        }
+
+        .meter-frustration .meter-fill {
+            background: var(--warning);
+        }
+
+        /* Session Info & Tips */
+        .session-info {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+            font-size: 0.9em;
+        }
+
+        .session-info p {
+            margin: 10px 0;
+        }
+
+        .session-id {
+            color: var(--text-light);
+            word-break: break-all;
+        }
+
+        .tips {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--success);
+        }
+
+        .tips h4 {
+            margin-bottom: 12px;
+            color: var(--success);
+        }
+
+        .tips ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .tips li {
+            padding: 6px 0;
+            padding-left: 20px;
+            position: relative;
+            font-size: 0.9em;
+        }
+
+        .tips li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        /* Trigger Popup */
+        .trigger-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 500px;
+            width: 90%;
+            display: none;
+        }
+
+        .trigger-popup.show {
+            display: block;
+        }
+
+        .trigger-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .trigger-overlay.show {
+            display: block;
+        }
+
+        .trigger-popup h3 {
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+
+        .trigger-popup p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .trigger-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .trigger-option {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--bg);
+            text-align: left;
+            font-size: 0.95em;
+        }
+
+        .trigger-option:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .trigger-option.selected {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.12);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .trigger-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .trigger-btn {
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--bg);
+            font-size: 0.9em;
+        }
+
+        .trigger-btn:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        /* Loading State */
+        .question-container.loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Integer Input Question Type */
+        .integer-input-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--bg);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .integer-input-section label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .integer-input-section input {
+            width: 100%;
+            max-width: 200px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .button-section {
+                grid-template-columns: 1fr;
+            }
+
+            .question-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .question-display {
+                padding: 15px;
+            }
+
+            .question-text {
+                font-size: 1em;
+            }
+
+            .option {
+                padding: 12px;
+            }
+
+            .badge {
+                font-size: 0.75em;
+                padding: 3px 6px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>🧠 Stress Dost</h1>
+        <p>Manage Your Stress | Master Your Mind | Ace Your Exam</p>
+    </div>
+
+    <div id="personality-assessment-screen" class="assessment-screen">
+        <div class="assessment-wrapper">
+            <div class="assessment-header">
+                <h2>🧠 Let's understand you better</h2>
+                <p>Answer 6 quick questions to personalize your experience</p>
+            </div>
+
+            <div id="assessment-questions-container" class="assessment-questions">
+                <p style="text-align:center; color:#6b7280;">Loading questions...</p>
+            </div>
+
+            <div class="assessment-progress">
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+                <p id="progress-text">Question 0 of 6</p>
+            </div>
+
+            <button id="submit-personality-btn" class="btn-block btn-submit" disabled>
+                Next Question
+            </button>
+        </div>
+    </div>
+
+    <div id="test-screen" style="display: none;">
+        <div class="container">
+        <div class="layout">
+            <!-- Main Content -->
+            <main>
+                <!-- Question Container -->
+                <div class="question-container">
+                    <div class="question-header">
+                        <div class="question-meta">
+                            <div class="question-number">
+                                Question <span id="question-num">1</span> of <span id="total-questions">20</span>
+                            </div>
+                            <div class="question-info">
+                                <span class="badge badge-subject" id="subject-badge">Math</span>
+                                <span class="badge badge-difficulty" id="difficulty-badge">HARD</span>
+                                <span class="badge badge-chapter" id="chapter-badge">Calculus</span>
+                            </div>
+                        </div>
+                        <div class="time-tracker">
+                            <span>⏱️</span>
+                            <span id="timer">0s</span>
+                        </div>
+                    </div>
+
+                    <!-- Question Display Area -->
+                    <div class="question-display">
+                        <!-- Question Text (HTML rendered) -->
+                        <div class="question-text-wrapper">
+                            <div id="question-content" class="question-text">
+                                Sample question will appear here. This feature integrates with your question bank API.
+                            </div>
+                            
+                            <!-- Question Images (if any) -->
+                            <div id="question-images" class="question-images">
+                                <!-- Images displayed here -->
+                            </div>
+                        </div>
+
+                        <!-- Options Display -->
+                        <div id="options-container" class="options-section">
+                            <div id="options-list" class="options">
+                                <div class="option">
+                                    <span class="option-label">(A)</span>
+                                    <span class="option-text">Loading options...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Metadata Display (optional) -->
+                        <div id="question-metadata" class="question-metadata">
+                            <details>
+                                <summary>Question Info</summary>
+                                <div class="metadata-content">
+                                    <p><strong>Sub-concepts:</strong> <span id="subconcepts">N/A</span></p>
+                                    <p><strong>Has Smart Trick:</strong> <span id="smart-trick">N/A</span></p>
+                                    <p><strong>Has Trap:</strong> <span id="has-trap">N/A</span></p>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="button-section">
+                        <button class="btn-block btn-submit" id="submit-btn">Submit Answer</button>
+                        <button class="btn-block btn-skip" id="skip-btn">Skip Question</button>
+                        <button class="btn-block btn-end" id="end-test-btn">End Test</button>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <!-- Stress Meters -->
+                <div class="stress-meters">
+                    <h3>STRESS METERS</h3>
+                    
+                    <div class="meter meter-fear">
+                        <div class="meter-label">
+                            <span>😨 Fear</span>
+                            <span id="fear-value">0.00</span>
+                        </div>
+                        <div class="meter-bar">
+                            <div class="meter-fill" id="fear-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="meter meter-thoughts">
+                        <div class="meter-label">
+                            <span>💭 Overthinking</span>
+                            <span id="thoughts-value">0.00</span>
+                        </div>
+                        <div class="meter-bar">
+                            <div class="meter-fill" id="thoughts-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="meter meter-frustration">
+                        <div class="meter-label">
+                            <span>😤 Frustration</span>
+                            <span id="frustration-value">0.00</span>
+                        </div>
+                        <div class="meter-bar">
+                            <div class="meter-fill" id="frustration-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Session Info -->
+                <div class="session-info">
+                    <p><strong>Session ID:</strong></p>
+                    <p class="session-id" id="session-id">Not started</p>
+                </div>
+
+                <!-- Tips -->
+                <div class="tips">
+                    <h4>💡 Tips:</h4>
+                    <ul>
+                        <li>Stay focused</li>
+                        <li>Breathe deeply</li>
+                        <li>Trust yourself</li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+        </div>
+    </div>
+
+    <!-- Trigger Popup -->
+    <div class="trigger-overlay" id="trigger-overlay"></div>
+    <div class="trigger-popup" id="trigger-popup">
+        <h3 id="trigger-title">Loading...</h3>
+        <p id="trigger-content">Processing trigger...</p>
+        <div id="trigger-options" class="trigger-options"></div>
+        <div id="trigger-actions" class="trigger-actions">
+            <button class="trigger-btn" onclick="dismissTrigger()">Dismiss (Swipe Away)</button>
+            <button class="trigger-btn" onclick="respondToTrigger()">Submit Response</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================================
+        // QUESTION MANAGEMENT
+        // ============================================================================
+
+        const QuestionManager = {
+            currentQuestionIndex: 0,
+            questions: [],
+            sessionId: null,
+            selectedAnswer: null,
+            
+            /**
+             * Initialize session and wait for personality assessment
+             */
+            initializeTest(sessionId) {
+                this.sessionId = sessionId;
+                const sessionLabel = document.getElementById('session-id');
+                if (sessionLabel) {
+                    sessionLabel.textContent = sessionId;
+                }
+            },
+
+            /**
+             * Fetch questions from backend once assessment completes
+             */
+            async fetchTestQuestions(numQuestions = 20) {
+                if (!this.sessionId) {
+                    console.warn('Session not initialized yet');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/fetch-test-questions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            session_id: this.sessionId,
+                            num_questions: numQuestions
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.status === 'success') {
+                        this.questions = data.questions;
+                        document.getElementById('total-questions').textContent = this.questions.length;
+                        console.log(`✓ Loaded ${this.questions.length} questions`);
+                        if (data.personality_profile) {
+                            console.log(`Profile: ${data.personality_profile} | Pool: ${data.question_pool}`);
+                        }
+
+                        const testScreen = document.getElementById('test-screen');
+                        const assessmentScreen = document.getElementById('personality-assessment-screen');
+                        if (testScreen) {
+                            testScreen.style.display = 'block';
+                        }
+                        if (assessmentScreen) {
+                            assessmentScreen.style.display = 'none';
+                        }
+
+                        this.loadQuestion(0);
+                    } else {
+                        console.error('Failed to load questions:', data.error);
+                        this.showError('Failed to load questions. Please refresh.');
+                    }
+                } catch (error) {
+                    console.error('Error loading questions:', error);
+                    this.showError('Error loading questions');
+                }
+            },
+            
+            /**
+             * Load and display a specific question
+             */
+            loadQuestion(index) {
+                if (index >= this.questions.length) {
+                    console.log('Test complete!');
+                    return;
+                }
+
+                this.currentQuestionIndex = index;
+                const question = this.questions[index];
+
+                lastAnswerCorrect = null;
+
+                // Update UI
+                document.getElementById('question-num').textContent = index + 1;
+                this.displayQuestion(question);
+
+                // Reset selected answer
+                this.selectedAnswer = null;
+                document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+
+                // Reset timer
+                startTimer();
+
+                // Show trigger popup for this question immediately
+                this.fetchAndShowTrigger();
+            },
+            
+            /**
+             * Display question in the UI
+             */
+            displayQuestion(question) {
+                // Question text
+                document.getElementById('question-content').innerHTML = question.question_html;
+                
+                // Badges
+                document.getElementById('subject-badge').textContent = question.subject;
+                document.getElementById('difficulty-badge').textContent = question.level;
+                document.getElementById('chapter-badge').textContent = question.chapter;
+                
+                // Display question images if any
+                this.displayQuestionImages(question.question_images);
+                
+                // Display options based on question type
+                this.displayOptions(question);
+                
+                // Display metadata
+                this.displayMetadata(question.metadata);
+            },
+            
+            /**
+             * Display question images
+             */
+            displayQuestionImages(images) {
+                const container = document.getElementById('question-images');
+                container.innerHTML = '';
+                
+                if (images && images.length > 0) {
+                    images.forEach(img => {
+                        const imgElement = document.createElement('img');
+                        imgElement.src = img;
+                        imgElement.alt = 'Question image';
+                        container.appendChild(imgElement);
+                    });
+                }
+            },
+            
+            /**
+             * Display options based on question type
+             */
+            displayOptions(question) {
+                const container = document.getElementById('options-list');
+                container.innerHTML = '';
+                
+                if (question.question_type === 'scq' || question.question_type === 'mcq') {
+                    // Multiple choice options
+                    if (question.options && question.options.length > 0) {
+                        question.options.forEach((option, idx) => {
+                            const optionDiv = document.createElement('div');
+                            optionDiv.className = 'option';
+                            optionDiv.innerHTML = `
+                                <span class="option-label">(${option.label})</span>
+                                <span class="option-text">${this.sanitizeText(option.text)}</span>
+                            `;
+                            optionDiv.onclick = () => this.selectOption(idx, option.label);
+                            container.appendChild(optionDiv);
+                        });
+                    }
+                } else if (question.question_type === 'integer') {
+                    // Integer input field
+                    const intSection = document.createElement('div');
+                    intSection.className = 'integer-input-section';
+                    intSection.innerHTML = `
+                        <label>Enter your answer:</label>
+                        <input type="number" id="integer-answer" placeholder="Enter integer">
+                    `;
+                    container.appendChild(intSection);
+                }
+            },
+            
+            /**
+             * Display question metadata
+             */
+            displayMetadata(metadata) {
+                if (!metadata) return;
+                
+                const subconcepts = metadata.tag_subconcepts || [];
+                document.getElementById('subconcepts').textContent = 
+                    subconcepts.length > 0 ? subconcepts.join(', ') : 'N/A';
+                
+                document.getElementById('smart-trick').textContent = 
+                    metadata.smart_trick ? '✓ Yes' : '✗ No';
+                
+                document.getElementById('has-trap').textContent = 
+                    metadata.trap ? '✓ Yes' : '✗ No';
+            },
+            
+            /**
+             * Handle option selection
+             */
+            selectOption(index, label) {
+                // Remove previous selection
+                document.querySelectorAll('.option').forEach((opt, idx) => {
+                    if (idx === index) {
+                        opt.classList.add('selected');
+                    } else {
+                        opt.classList.remove('selected');
+                    }
+                });
+                
+                this.selectedAnswer = label;
+                console.log(`Selected: ${label}`);
+            },
+            
+            /**
+             * Submit current answer
+             */
+            async submitAnswer() {
+                if (this.selectedAnswer === null) {
+                    alert('Please select an answer');
+                    return;
+                }
+
+                const timeTaken = getElapsedTime();
+
+                try {
+                    const response = await fetch('/api/submit-answer', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            session_id: this.sessionId,
+                            question_id: this.questions[this.currentQuestionIndex].question_id,
+                            selected_answer: this.selectedAnswer,
+                            time_taken: timeTaken
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.status === 'success') {
+                        console.log(`✓ Answer submitted. Correct: ${data.is_correct}`);
+                        lastAnswerCorrect = !!data.is_correct;
+                        this.loadQuestion(this.currentQuestionIndex + 1);
+                    }
+                } catch (error) {
+                    console.error('Error submitting answer:', error);
+                    this.loadQuestion(this.currentQuestionIndex + 1);
+                }
+            },
+
+            async fetchAndShowTrigger() {
+                try {
+                    const label = 'thoughts';
+                    const response = await fetch('/api/get-trigger', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            session_id: this.sessionId,
+                            question_index: this.currentQuestionIndex,
+                            label: label
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (data.status === 'trigger_ready' && data.trigger) {
+                        currentTriggerData = data.trigger;
+                        currentTriggerLabel = label;
+                        triggerStartTime = Date.now();
+                        triggerOptionSelected = null;
+
+                        const triggerText = data.trigger.text || 'Take a deep breath.';
+                        showTrigger('Thoughts Check-in', triggerText, data.trigger);
+                        return true;
+                    } else {
+                        console.log('No trigger for this question');
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Error fetching trigger:', error);
+                    return false;
+                }
+            },
+            
+            /**
+             * Skip current question
+             */
+            skipQuestion() {
+                console.log('Question skipped');
+                this.loadQuestion(this.currentQuestionIndex + 1);
+            },
+            
+            /**
+             * Show error message
+             */
+            showError(message) {
+                const questionContainer = document.querySelector('.question-container');
+                questionContainer.innerHTML = `<div style="color: red; padding: 20px; text-align: center;">${message}</div>`;
+            },
+            
+            /**
+             * Sanitize text for safe display
+             */
+            sanitizeText(text) {
+                return text.replace(/<[^>]*>/g, '');
+            }
+        };
+
+        // =========================================================================
+        // PERSONALITY ASSESSMENT MANAGEMENT
+        // =========================================================================
+
+        const PersonalityAssessment = {
+            questions: [],
+            currentIndex: 0,
+            responses: {},
+
+            async initialize() {
+                this.currentIndex = 0;
+                this.responses = {};
+                const assessmentScreen = document.getElementById('personality-assessment-screen');
+                const testScreen = document.getElementById('test-screen');
+                if (assessmentScreen) {
+                    assessmentScreen.style.display = 'flex';
+                }
+                if (testScreen) {
+                    testScreen.style.display = 'none';
+                }
+                await this.loadQuestions();
+            },
+
+            async loadQuestions() {
+                try {
+                    const response = await fetch('/api/personality/questions');
+                    const data = await response.json();
+
+                    if (data.status === 'success') {
+                        this.questions = data.questions || [];
+                        if (this.questions.length) {
+                            this.renderQuestion();
+                        }
+                    } else {
+                        this.showError(data.error || 'Unable to load assessment');
+                    }
+                } catch (error) {
+                    console.error('Error loading personality questions:', error);
+                    this.showError('Error loading assessment questions');
+                }
+            },
+
+            renderQuestion() {
+                if (!this.questions.length) {
+                    return;
+                }
+
+                const container = document.getElementById('assessment-questions-container');
+                if (!container) {
+                    return;
+                }
+
+                const question = this.questions[this.currentIndex];
+                container.innerHTML = '';
+
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'assessment-question active';
+
+                const questionText = document.createElement('div');
+                questionText.className = 'question-text';
+                questionText.textContent = question.question;
+                questionDiv.appendChild(questionText);
+
+                const optionsGroup = document.createElement('div');
+                optionsGroup.className = 'options-group';
+
+                question.options.forEach((option, idx) => {
+                    const label = document.createElement('label');
+                    label.className = 'assessment-option';
+
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = `assessment-${question.id}`;
+                    input.value = idx;
+                    input.checked = this.responses[question.id] === idx;
+                    input.addEventListener('change', () => {
+                        this.selectOption(question.id, idx, label, optionsGroup);
+                    });
+
+                    const span = document.createElement('span');
+                    span.textContent = option.text;
+
+                    label.appendChild(input);
+                    label.appendChild(span);
+
+                    if (input.checked) {
+                        label.classList.add('selected');
+                    }
+
+                    optionsGroup.appendChild(label);
+                });
+
+                questionDiv.appendChild(optionsGroup);
+                container.appendChild(questionDiv);
+
+                this.updateProgress();
+                this.updateActionButtonState(question.id);
+            },
+
+            updateProgress() {
+                const total = this.questions.length || 1;
+                const fill = document.getElementById('progress-fill');
+                const text = document.getElementById('progress-text');
+                const progress = ((this.currentIndex + 1) / total) * 100;
+
+                if (fill) {
+                    fill.style.width = `${progress}%`;
+                }
+                if (text) {
+                    text.textContent = `Question ${Math.min(this.currentIndex + 1, total)} of ${total}`;
+                }
+            },
+
+            updateActionButtonState(questionId) {
+                const button = document.getElementById('submit-personality-btn');
+                if (!button) {
+                    return;
+                }
+
+                const hasAnswer = Object.prototype.hasOwnProperty.call(this.responses, questionId);
+                button.disabled = !hasAnswer;
+                button.textContent = this.currentIndex === this.questions.length - 1
+                    ? 'Submit & Start Test'
+                    : 'Next Question';
+            },
+
+            selectOption(questionId, optionIndex, optionElement, optionsGroup) {
+                this.responses[questionId] = optionIndex;
+
+                if (optionsGroup) {
+                    optionsGroup.querySelectorAll('.assessment-option').forEach(option => {
+                        option.classList.remove('selected');
+                    });
+                }
+
+                if (optionElement) {
+                    optionElement.classList.add('selected');
+                }
+
+                this.updateActionButtonState(questionId);
+            },
+
+            handleAction() {
+                if (!this.questions.length) {
+                    return;
+                }
+
+                const currentQuestion = this.questions[this.currentIndex];
+                if (!Object.prototype.hasOwnProperty.call(this.responses, currentQuestion.id)) {
+                    alert('Please select an option to continue');
+                    return;
+                }
+
+                if (this.currentIndex < this.questions.length - 1) {
+                    this.currentIndex += 1;
+                    this.renderQuestion();
+                } else {
+                    this.submitResponses();
+                }
+            },
+
+            async submitResponses() {
+                const payloadResponses = Object.entries(this.responses).map(([questionId, optionIndex]) => ({
+                    question_id: Number(questionId),
+                    option_index: optionIndex
+                }));
+
+                if (payloadResponses.length < this.questions.length) {
+                    alert('Please answer all questions');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/personality/submit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            session_id: QuestionManager.sessionId,
+                            responses: payloadResponses
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.status === 'success') {
+                        console.log('✓ Personality Assessment captured');
+                        console.log('   Personality Vector:', data.personality_vector);
+                        console.log('   Question Pool:', data.question_pool);
+                        console.log('   Difficulty:', data.difficulty);
+                        await QuestionManager.fetchTestQuestions();
+                    } else {
+                        alert(data.error || 'Unable to submit assessment');
+                    }
+                } catch (error) {
+                    console.error('Error submitting personality assessment:', error);
+                    alert('Error submitting assessment. Please try again.');
+                }
+            },
+
+            showError(message) {
+                const container = document.getElementById('assessment-questions-container');
+                if (container) {
+                    container.innerHTML = `<p style="text-align:center; color:#ef4444;">${message}</p>`;
+                }
+            }
+        };
+
+        // ============================================================================
+        // BUTTON HANDLERS
+        // ============================================================================
+
+        const personalityBtn = document.getElementById('submit-personality-btn');
+        if (personalityBtn) {
+            personalityBtn.addEventListener('click', () => PersonalityAssessment.handleAction());
+        }
+
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            QuestionManager.submitAnswer();
+        });
+
+        document.getElementById('skip-btn').addEventListener('click', () => {
+            QuestionManager.skipQuestion();
+        });
+
+        document.getElementById('end-test-btn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to end the test?')) {
+                console.log('Test ended');
+                // Redirect or show summary
+            }
+        });
+
+        // ============================================================================
+        // TIMER MANAGEMENT
+        // ============================================================================
+
+        let questionStartTime = null;
+        let timerInterval = null;
+        let currentTriggerData = null;
+        let currentTriggerLabel = 'thoughts';
+        let triggerOptionSelected = null;
+        let triggerStartTime = null;
+        let lastAnswerCorrect = false;
+
+        function startTimer() {
+            questionStartTime = Date.now();
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                if (questionStartTime) {
+                    const elapsed = Math.floor((Date.now() - questionStartTime) / 1000);
+                    document.getElementById('timer').textContent = elapsed + 's';
+                }
+            }, 1000);
+        }
+
+        function getElapsedTime() {
+            if (!questionStartTime) return 0;
+            return (Date.now() - questionStartTime) / 1000;
+        }
+
+        // ============================================================================
+        // TRIGGER MANAGEMENT
+        // ============================================================================
+
+        function showTrigger(title, content, triggerData = null) {
+            currentTriggerData = triggerData;
+            triggerOptionSelected = null;
+            triggerStartTime = Date.now();
+
+            document.getElementById('trigger-title').textContent = title;
+            document.getElementById('trigger-content').textContent = content;
+
+            const optionsContainer = document.getElementById('trigger-options');
+            optionsContainer.innerHTML = '';
+
+            if (triggerData && triggerData.type === 'option_based' && Array.isArray(triggerData.options)) {
+                optionsContainer.style.display = 'flex';
+                triggerData.options.forEach((option, idx) => {
+                    const optionBtn = document.createElement('button');
+                    optionBtn.className = 'trigger-option';
+                    optionBtn.textContent = option;
+                    optionBtn.onclick = () => selectTriggerOption(idx);
+                    optionsContainer.appendChild(optionBtn);
+                });
+            } else {
+                optionsContainer.style.display = 'none';
+            }
+
+            document.getElementById('trigger-overlay').classList.add('show');
+            document.getElementById('trigger-popup').classList.add('show');
+        }
+
+        function selectTriggerOption(index) {
+            triggerOptionSelected = index;
+            document.querySelectorAll('#trigger-options .trigger-option').forEach((btn, idx) => {
+                if (idx === index) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
+        }
+
+        function dismissTrigger() {
+            sendTriggerResponse(null);
+        }
+
+        function respondToTrigger() {
+            if (currentTriggerData && currentTriggerData.type === 'option_based' && triggerOptionSelected === null) {
+                alert('Please select a response option');
+                return;
+            }
+            sendTriggerResponse(triggerOptionSelected);
+        }
+
+        async function sendTriggerResponse(selectedOption) {
+            try {
+                if (!currentTriggerData) {
+                    closeTriggerPopup();
+                    return;
+                }
+
+                const timeTaken = triggerStartTime
+                    ? (Date.now() - triggerStartTime) / 1000
+                    : 0;
+
+                const payload = {
+                    session_id: QuestionManager.sessionId,
+                    label: currentTriggerLabel,
+                    trigger: currentTriggerData,
+                    response: {
+                        selected_option: selectedOption,
+                        time_taken: timeTaken,
+                        answer_correct: typeof lastAnswerCorrect === 'boolean' ? lastAnswerCorrect : false
+                    }
+                };
+
+                const response = await fetch('/api/submit-response', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                if (data.meters) {
+                    updateAllMeters(
+                        data.meters.fear || 0,
+                        data.meters.thoughts || 0,
+                        data.meters.frustration || 0
+                    );
+                }
+            } catch (error) {
+                console.error('Error sending trigger response:', error);
+            } finally {
+                closeTriggerPopup();
+            }
+        }
+
+        function closeTriggerPopup() {
+            document.getElementById('trigger-overlay').classList.remove('show');
+            document.getElementById('trigger-popup').classList.remove('show');
+
+            currentTriggerData = null;
+            triggerOptionSelected = null;
+            triggerStartTime = null;
+        }
+
+        // ============================================================================
+        // STRESS METER UPDATES
+        // ============================================================================
+
+        function updateMeter(meterType, value) {
+            const percentage = Math.min(100, value * 100);
+            
+            document.getElementById(`${meterType}-fill`).style.width = percentage + '%';
+            document.getElementById(`${meterType}-value`).textContent = value.toFixed(2);
+        }
+
+        // Example: Update meters
+        function updateAllMeters(fear, thoughts, frustration) {
+            updateMeter('fear', fear);
+            updateMeter('thoughts', thoughts);
+            updateMeter('frustration', frustration);
+        }
+
+        // ============================================================================
+        // INITIALIZATION
+        // ============================================================================
+
+        async function createSession() {
+            try {
+                const response = await fetch('/api/start-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: 'web_user_' + Math.random().toString(36).substring(2, 8),
+                        total_questions: 20,
+                        category: 'thoughts'
+                    })
+                });
+
+                const data = await response.json();
+                if (response.ok && data.session_id) {
+                    QuestionManager.initializeTest(data.session_id);
+                    await PersonalityAssessment.initialize();
+                } else {
+                    console.error('Unable to start session', data);
+                    alert('Failed to start session. Please refresh the page.');
+                }
+            } catch (error) {
+                console.error('Error creating session:', error);
+                alert('Error starting session. Please check your connection.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createSession();
+        });
+    </script>
+</body>
+</html>
