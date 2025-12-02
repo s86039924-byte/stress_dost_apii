@@ -716,7 +716,7 @@ def get_question_by_index():
 # ============================================================================
 
 @app.route('/api/get-trigger', methods=['POST'])
-@app.route('@/api/module/trigger', methods=['POST'])
+@app.route('/api/module/trigger', methods=['POST'])
 def get_trigger():
     data = request.json
     session_id = data.get('session_id')
