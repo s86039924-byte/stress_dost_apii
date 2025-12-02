@@ -1041,7 +1041,7 @@
 
 """
 Stress Dost - Stress Management Feature for JEE/NEET Preparation
-Flask Backend with Real-time WebSocket, Groq Integration, Acadza Questions, and Google Sheets Logging
+Flask Backend with Real-time WebSocket, OpenAI Integration, Acadza Questions, and Google Sheets Logging
 """
 
 from flask import Flask, render_template, request, jsonify
@@ -1052,12 +1052,15 @@ import time
 from datetime import datetime
 import os
 import re
+import logging
 from dotenv import load_dotenv
-import requests
-import httpx
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-from groq import Groq
+
+from personality_mapper import personality_mapper
+from popup_selector import PopupSelector
+from session_manager import SessionManager
+from openai_generator import PersonalizedOpenAIGenerator
 
 # ============================================================================
 # LOAD ENV & CREATE FLASK APP FIRST
@@ -1068,16 +1071,31 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'stress-dost-secret-2025')
 socketio = SocketIO(app, cors_allowed_origins="*")
+logger = logging.getLogger(__name__)
 
 # ============================================================================
 # IMPORT QUESTION SERVICE AFTER FLASK APP IS CREATED
 # ============================================================================
 
-# Question fetcher integration is temporarily disabled while Stress Dost is exposed as
-# a standalone API service. See the README guide for details on integrating the new API.
-# from question_service import init_question_service, QuestionFormatter, acadza_fetcher
+from question_service import init_question_service, QuestionFormatter, acadza_fetcher
+init_question_service(app)
 
-# init_question_service(app)
+# ============================================================================
+# IMPORT PERSONALITY ASSESSMENT MODULES
+# ============================================================================
+
+from personality_assessor import (
+    PersonalityAssessor,
+    ContinuousPersonalitySelector,
+    integrate_with_session,
+    adaptive_update_personality
+)
+
+personality_assessor = PersonalityAssessor(
+    'personality_assessment_questions.txt',
+    question_limit=10
+)
+personality_selector = ContinuousPersonalitySelector()
 
 # ============================================================================
 # IMPORT METER CALCULATION MODULES
@@ -1096,25 +1114,16 @@ from meter_calculation_v2 import (
 # CONFIGURATION
 # ============================================================================
 
-GROQ_API_KEY = os.getenv('GROQ_API_KEY')
-GROQ_API_URL = os.getenv('GROQ_API_URL', 'https://api.groq.com/openai/v1/chat/completions')
-GROQ_MODEL = os.getenv('GROQ_MODEL', 'llama-3.3-70b-versatile')
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-4o-mini')
 CHATGPT_TIMEOUT = 5  # seconds
 METER_THRESHOLD = 0.8
 DIFFICULTY_INCREMENT = 0.1
 
-# Initialize Groq client
-groq_client = None
-groq_http_client = None
-
-if GROQ_API_KEY:
-    try:
-        groq_http_client = httpx.Client()
-        groq_client = Groq(api_key=GROQ_API_KEY, http_client=groq_http_client)
-        print("✓ Groq client initialized (streaming mode)")
-    except Exception as e:
-        print(f"⚠ Failed to initialize Groq client: {e}")
-        groq_client = None
+personalized_ai_generator = (
+    PersonalizedOpenAIGenerator(OPENAI_API_KEY, OPENAI_MODEL)
+    if OPENAI_API_KEY else None
+)
 
 # Google Sheets Configuration
 GOOGLE_SHEETS_CREDENTIALS = os.getenv('GOOGLE_SHEETS_CREDENTIALS_PATH', 'credentials.json')
@@ -1130,11 +1139,53 @@ except Exception as e:
     print(f"⚠ Failed to load triggers dataset: {e}")
     TRIGGERS_DATASET = {}
 
+def _preprocess_triggers(dataset):
+    processed = {}
+    if not isinstance(dataset, dict):
+        return processed
+    for category, items in dataset.items():
+        processed[category] = []
+        iterator = items.items() if isinstance(items, dict) else enumerate(items)
+        for key, data in iterator:
+            if not isinstance(data, dict):
+                continue
+            popup = data.copy()
+            popup['id'] = key
+            raw_tags = popup.get('personality_tags', []) or popup.get('tags', [])
+            canonical_tags = []
+            for tag in raw_tags:
+                canonical_tags.extend(personality_mapper.map_trait_name_to_tags(tag))
+            tags = list(dict.fromkeys(canonical_tags)) if canonical_tags else raw_tags
+
+            if len(tags) < 2:
+                base_tags = personality_mapper.CATEGORY_TAG_ENRICHMENT.get(
+                    category,
+                    {}
+                ).get('base_tags', [])
+                for base_tag in base_tags:
+                    if base_tag not in tags:
+                        tags.append(base_tag)
+                    if len(tags) >= 2:
+                        break
+
+            if len(tags) < 2:
+                tags.extend(['supportive', 'encouragement'])
+                tags = list(dict.fromkeys(tags))
+
+            popup['tags'] = tags
+
+            if len(tags) < 2:
+                logger.warning("Popup %s still lacks rich tags after enrichment", key)
+
+            processed[category].append(popup)
+    return processed
+
+PROCESSED_TRIGGERS = _preprocess_triggers(TRIGGERS_DATASET)
+
 # ============================================================================
 # DATA STRUCTURES
 # ============================================================================
 
-# In-memory storage
 user_sessions = {}
 
 class UserSession:
@@ -1158,7 +1209,23 @@ class UserSession:
         self.responses = []
         self.triggered_sentences = []
         self.current_difficulty = 1.0
-        self.loaded_questions = []  # NEW: Store questions loaded from Acadza
+        self.loaded_questions = []
+        self.personality_assessment = None
+        self.personality_completed = False
+        self.personality_responses = []
+        self.question_pool = 'mixed'
+        self.recommended_trigger_frequency = 6
+        self.personality_vector = None
+        self.trigger_types = []
+        self.session_manager = SessionManager(user_id)
+        self.popup_selector = PopupSelector(session_id)
+        self.current_traits = []
+        self.popup_counter = 0
+        self.trigger_source_counts = {
+            'chatgpt': 0,
+            'dataset': 0
+        }
+        self.test_category = 'thoughts'
 
     def to_dict(self):
         return {
@@ -1170,7 +1237,14 @@ class UserSession:
             'current_question': self.current_question_index,
             'total_questions': self.total_questions,
             'timestamp': self.start_time.isoformat(),
-            'difficulty': self.current_difficulty
+            'difficulty': self.current_difficulty,
+            'personality_vector': self.personality_vector,
+            'question_pool': self.question_pool,
+            'trigger_frequency': self.recommended_trigger_frequency,
+            'current_traits': self.current_traits,
+            'personality_completed': self.personality_completed,
+            'trigger_source_counts': self.trigger_source_counts,
+            'popup_counter': self.popup_counter
         }
 
 # ============================================================================
@@ -1186,7 +1260,6 @@ class GoogleSheetsLogger:
         self.setup_connection()
 
     def setup_connection(self):
-        """Initialize Google Sheets connection"""
         try:
             scope = [
                 'https://spreadsheets.google.com/feeds',
@@ -1204,7 +1277,6 @@ class GoogleSheetsLogger:
             print("  Continuing in demo mode (data will be stored in memory only)")
 
     def log_response(self, user_id, session_id, question_index, trigger_data, response_data):
-        """Log user response to Google Sheets"""
         if not self.worksheet:
             return False
         try:
@@ -1234,7 +1306,6 @@ class GoogleSheetsLogger:
             print(f"⚠ Error logging to Google Sheets: {e}")
             return False
 
-# Initialize Google Sheets logger (optional)
 sheets_logger = None
 if GOOGLE_SHEET_ID:
     try:
@@ -1247,158 +1318,197 @@ if GOOGLE_SHEET_ID:
         print(f"Google Sheets logging disabled: {e}")
 
 # ============================================================================
-# GROQ (LLM) INTEGRATION
+# PERSONALITY ASSESSMENT ROUTES
 # ============================================================================
 
-def get_chatgpt_trigger(session, label):
-    """
-    Generate personalized trigger using Groq API
-    Timeout after 5 seconds, fallback to dataset trigger
-    """
-    if not GROQ_API_KEY:
-        return None
+@app.route('/api/personality/questions', methods=['GET'])
+@app.route('/api/module/personality/questions', methods=['GET'])
+def get_personality_questions():
+    questions = personality_assessor.get_all_questions()
+    return jsonify({
+        'status': 'success',
+        'questions': questions,
+        'total': len(questions),
+        'estimated_time_minutes': 4
+    })
+
+
+@app.route('/api/personality/submit', methods=['POST'])
+@app.route('/api/module/personality/submit', methods=['POST'])
+def submit_personality_assessment():
+    data = request.json or {}
+    session_id = data.get('session_id')
+    responses = data.get('responses', [])
+
+    session = user_sessions.get(session_id)
+    if not session:
+        return jsonify({'error': 'Invalid session'}), 404
+
+    if not responses:
+        return jsonify({'error': 'No responses provided'}), 400
 
     try:
-        context_payload = {}
-        if session.chatgpt_context_builder:
-            recent_responses = session.meter_calculator.response_history[-5:]
-            context_payload = session.chatgpt_context_builder.build_context(
-                session.meter_state,
-                recent_responses,
-                session.current_difficulty
-            )
-            context_payload['next_trigger_request']['category'] = label
-        else:
-            context_payload = {
-                'current_state': session.to_dict(),
-                'category': label
-            }
-
-        previous_triggers = ', '.join(session.triggered_sentences) if session.triggered_sentences else 'None'
-
-        context = f"""
-You are an AI helping to assess student stress levels during JEE/NEET exam preparation.
-
-Use the following JSON context for personalization:
-
-{json.dumps(context_payload, indent=2)}
-
-Generate ONE personalized trigger sentence for the "{label}" category that:
-
-1. Is relatable to JEE/NEET students
-2. Matches the current stress level (higher meter = stronger trigger)
-3. Is different from previously shown triggers
-4. Can be either option-based (include 3 options) or sarcasm-only
-5. MUST return ONLY the JSON object described below. Do not include explanations, descriptions, code fences, or any text before/after the JSON.
-
-Previous triggers shown: {previous_triggers}
-
-Respond with a JSON object:
-
-{{
-    "type": "option_based" or "sarcasm" or "motivation",
-    "text": "trigger sentence here",
-    "options": ["option1", "option2", "option3"] (only if type is option_based),
-    "value": 0.5 (stress increase, negative for motivation)
-}}
-"""
-
-        if groq_client:
-            completion = groq_client.chat.completions.create(
-                model=GROQ_MODEL,
-                messages=[
-                    {'role': 'system', 'content': 'You are a stress assessment AI for student preparation.'},
-                    {'role': 'user', 'content': context}
-                ],
-                temperature=1,
-                max_tokens=512,
-                top_p=1,
-                stream=True,
-                stop=None
-            )
-            content_parts = []
-            for chunk in completion:
-                delta = chunk.choices[0].delta.content or ''
-                content_parts.append(delta)
-            content = ''.join(content_parts)
-        else:
-            headers = {
-                'Authorization': f'Bearer {GROQ_API_KEY}',
-                'Content-Type': 'application/json'
-            }
-            payload = {
-                'model': GROQ_MODEL,
-                'messages': [
-                    {'role': 'system', 'content': 'You are a stress assessment AI for student preparation.'},
-                    {'role': 'user', 'content': context}
-                ],
-                'temperature': 1,
-                'max_tokens': 512,
-                'top_p': 1,
-                'stream': False,
-                'stop': None
-            }
-            response = requests.post(
-                GROQ_API_URL,
-                json=payload,
-                headers=headers,
-                timeout=CHATGPT_TIMEOUT
-            )
-            if response.status_code != 200:
-                print(f"Groq HTTP error: {response.status_code} - {response.text}")
-                return None
-            result = response.json()
-            content = result['choices'][0]['message']['content']
-
-        print("Groq raw response:", content)
-        try:
-            trigger = json.loads(content)
-        except json.JSONDecodeError:
-            cleaned = content.strip()
-            if cleaned.startswith('```') and cleaned.endswith('```'):
-                cleaned = cleaned.strip('`')
-            if cleaned.lower().startswith('json'):
-                cleaned = cleaned[4:]
-            cleaned = cleaned.strip()
-
-            def extract_json_block(text):
-                start = text.find('{')
-                if start == -1:
-                    return text
-                depth = 0
-                for idx in range(start, len(text)):
-                    ch = text[idx]
-                    if ch == '{':
-                        depth += 1
-                    elif ch == '}':
-                        depth -= 1
-                    if depth == 0:
-                        return text[start:idx+1]
-                return text
-
-            cleaned = extract_json_block(cleaned)
-            trigger = json.loads(cleaned)
-
-        return trigger
-
+        result = personality_assessor.analyze_responses(responses)
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
     except Exception as e:
-        print(f"⚠ Groq API error: {e}")
+        return jsonify({'error': f'Failed to analyze assessment: {e}'}), 500
+
+    integrate_with_session(session, result)
+    session.personality_responses = responses
+
+    if session.session_manager and result.get('personality_vector'):
+        session.session_manager.load_initial_personality(result['personality_vector'])
+        state_snapshot = session.session_manager.get_session_state()
+        session.personality_vector = state_snapshot.get('current_personality_vector')
+        session.current_traits = state_snapshot.get('current_traits', [])
+
+    recommendations = result.get('recommendations', {})
+
+    return jsonify({
+        'status': 'success',
+        'personality_vector': result.get('personality_vector'),
+        'summary': result.get('summary'),
+        'traits': result.get('traits', []),
+        'recommendations': recommendations,
+        'weight_check': result.get('weight_check'),
+        'valid': result.get('valid'),
+        'question_pool': recommendations.get('question_pool', {}).get('value') if recommendations else session.question_pool,
+        'difficulty': recommendations.get('question_difficulty', {}).get('value') if recommendations else session.current_difficulty,
+        'trigger_frequency': recommendations.get('trigger_frequency', {}).get('value') if recommendations else session.recommended_trigger_frequency
+    })
+
+# ============================================================================
+# OPENAI (LLM) INTEGRATION
+# ============================================================================
+
+def get_chatgpt_trigger(session, label, force_option_based=False):
+    if not personalized_ai_generator:
+        return None
+
+    personality_vector = session.personality_vector or {}
+    if session.session_manager and not personality_vector:
+        personality_vector = session.session_manager.current_personality_vector
+    personality_vector = personality_vector or {}
+
+    tags = personality_mapper.get_tags_from_personality(personality_vector, label)
+    session_state = session.session_manager.get_session_state() if session.session_manager else {}
+    student_state = {
+        'personality_vector': personality_vector,
+        'current_traits': session.current_traits or session_state.get('current_traits', []),
+        'recent_accuracy': session_state.get('recent_accuracy')
+    }
+
+    accuracy_pct = session_state.get('recent_accuracy')
+    accuracy_pct = round(accuracy_pct * 100, 1) if isinstance(accuracy_pct, (int, float)) else 'unknown'
+    meter_context = {
+        'accuracy': accuracy_pct,
+        'trend': session.meter_state.get_severity_level(),
+        'confidence': 'high' if personality_vector.get('self_confidence', 0.5) > 0.7 else 'medium'
+    }
+
+    try:
+        popup = personalized_ai_generator.generate_popup(
+            student_state,
+            tags,
+            label,
+            meter_context,
+            force_option_based=force_option_based
+        )
+        if popup:
+            popup.setdefault('options', [])
+            return popup
+        return None
+    except Exception as e:
+        print(f"⚠ OpenAI API error: {e}")
         return None
 
 # ============================================================================
 # TRIGGER SELECTION LOGIC
 # ============================================================================
 
+def _determine_trigger_source_order(session, label):
+    ai_available = personalized_ai_generator is not None
+    dataset_available = bool(PROCESSED_TRIGGERS.get(label))
+    if not ai_available and not dataset_available:
+        return []
+
+    counts = getattr(session, 'trigger_source_counts', {})
+    ai_count = counts.get('chatgpt', 0)
+    dataset_count = counts.get('dataset', 0)
+    total = ai_count + dataset_count
+
+    if ai_available and dataset_available:
+        if total == 0:
+            preferred = 'chatgpt'
+        else:
+            ai_ratio = ai_count / total if total else 0
+            if ai_ratio < 0.5:
+                preferred = 'chatgpt'
+            elif ai_ratio > 0.5:
+                preferred = 'dataset'
+            else:
+                preferred = random.choice(['chatgpt', 'dataset'])
+        secondary = 'dataset' if preferred == 'chatgpt' else 'chatgpt'
+        return [preferred, secondary]
+
+    if ai_available:
+        return ['chatgpt']
+    return ['dataset']
+
+
+def _select_dataset_trigger(session, label, needs_option_based):
+    popups = PROCESSED_TRIGGERS.get(label, [])
+    if not popups:
+        return None
+
+    required_type = 'option_based' if needs_option_based else None
+    if session.popup_selector:
+        candidate = session.popup_selector.select_popup(
+            session.personality_vector or (
+                session.session_manager.current_personality_vector if session.session_manager else {}
+            ),
+            label,
+            PROCESSED_TRIGGERS,
+            required_type=required_type
+        )
+        if candidate and candidate.get('text') not in session.triggered_sentences:
+            return candidate
+
+    filtered = [
+        popup for popup in popups
+        if popup.get('text') not in session.triggered_sentences and (
+            not needs_option_based or popup.get('type') == 'option_based'
+        )
+    ]
+    return random.choice(filtered) if filtered else None
+
+
+def _fallback_dataset_trigger(session, label):
+    popups = PROCESSED_TRIGGERS.get(label, [])
+    if not popups:
+        return None
+
+    unused = [popup for popup in popups if popup.get('text') not in session.triggered_sentences]
+    pool = unused if unused else popups
+    return random.choice(pool) if pool else None
+
+
+def _record_trigger_delivery(session, trigger_payload, next_count, source):
+    session.triggered_sentences.append(trigger_payload.get('text', ''))
+    session.popup_counter = next_count
+    counts = getattr(session, 'trigger_source_counts', None)
+    if counts is None:
+        counts = {'chatgpt': 0, 'dataset': 0}
+        session.trigger_source_counts = counts
+    counts[source] = counts.get(source, 0) + 1
+
+
 def get_next_trigger(session, label):
-    """
-    Select next trigger:
-    - 50% from dataset (pre-written)
-    - 50% from Groq (generated)
-    """
-    use_ai = random.random() < 0.5
+    next_count = session.popup_counter + 1
+    needs_option_based = (next_count % 2 == 0)
 
     def apply_difficulty(trigger_payload):
-        """Return a copy of trigger payload with difficulty applied"""
         if not trigger_payload:
             return None
         scaled = json.loads(json.dumps(trigger_payload))
@@ -1406,23 +1516,36 @@ def get_next_trigger(session, label):
         scaled['value'] = round(value * session.current_difficulty, 3)
         return scaled
 
-    if use_ai:
-        trigger = get_chatgpt_trigger(session, label)
-        if trigger:
-            session.triggered_sentences.append(trigger.get('text', ''))
-            return apply_difficulty(trigger), 'chatgpt'
+    source_order = _determine_trigger_source_order(session, label)
+    if not source_order:
+        return None, 'none'
 
-    # Fallback to dataset
-    if label in TRIGGERS_DATASET:
-        triggers = TRIGGERS_DATASET[label]
-        available = [
-            (key, trigger) for key, trigger in triggers.items()
-            if trigger['text'] not in session.triggered_sentences
-        ]
-        if available:
-            key, trigger = random.choice(available)
-            session.triggered_sentences.append(trigger['text'])
-            return apply_difficulty(trigger), 'dataset'
+    requirement_order = [needs_option_based]
+    if needs_option_based:
+        requirement_order.append(False)
+
+    for require_options in requirement_order:
+        for source in source_order:
+            trigger = None
+            if source == 'chatgpt':
+                trigger = get_chatgpt_trigger(
+                    session,
+                    label,
+                    force_option_based=require_options
+                )
+            else:
+                trigger = _select_dataset_trigger(session, label, require_options)
+
+            if trigger:
+                scaled_trigger = apply_difficulty(trigger)
+                _record_trigger_delivery(session, trigger, next_count, source)
+                return scaled_trigger, source
+
+    fallback_trigger = _fallback_dataset_trigger(session, label)
+    if fallback_trigger:
+        scaled_trigger = apply_difficulty(fallback_trigger)
+        _record_trigger_delivery(session, fallback_trigger, next_count, 'dataset')
+        return scaled_trigger, 'dataset'
 
     return None, 'none'
 
@@ -1430,20 +1553,52 @@ def get_next_trigger(session, label):
 # ROUTES
 # ============================================================================
 
+def _create_new_session(user_id, total_questions=5, test_category='thoughts'):
+    if not user_id:
+        raise ValueError('user_id is required to start a session')
+
+    base_id = f"{user_id}_{int(time.time())}"
+    suffix = random.randint(1000, 9999)
+    session_id = f"{base_id}_{suffix}"
+    while session_id in user_sessions:
+        suffix = random.randint(1000, 9999)
+        session_id = f"{base_id}_{suffix}"
+
+    session = UserSession(user_id, session_id)
+    session.total_questions = total_questions
+    session.test_category = test_category or 'thoughts'
+    user_sessions[session_id] = session
+    return session
+
 @app.route('/')
 def index():
-    """Serve main test interface"""
     return render_template('index.html')
+
+@app.route('/api/session/<session_id>', methods=['GET'])
+@app.route('/api/module/session/<session_id>', methods=['GET'])
+def get_session_snapshot(session_id):
+    session = user_sessions.get(session_id)
+    if not session:
+        return jsonify({'error': 'Invalid session'}), 404
+
+    snapshot = session.to_dict()
+    snapshot['meters'] = {
+        'fear': session.meter_state.fear_meter,
+        'thoughts': session.meter_state.thought_meter,
+        'frustration': session.meter_state.frustration_meter
+    }
+    snapshot['triggers_served'] = len(session.responses)
+    return jsonify({'status': 'success', 'session': snapshot})
 
 @app.route('/api/config', methods=['GET'])
 def get_config():
-    """Get frontend configuration"""
     return jsonify({
         'chatgpt_timeout': CHATGPT_TIMEOUT,
         'meter_threshold': METER_THRESHOLD,
         'difficulty_increment': DIFFICULTY_INCREMENT,
         'version': '2.0.0',
         'features': {
+            'personality_assessment': True,
             'questions_api': True,
             'chatgpt_integration': True,
             'google_sheets_logging': True
@@ -1451,74 +1606,173 @@ def get_config():
     })
 
 @app.route('/api/start-session', methods=['POST'])
+@app.route('/api/module/session', methods=['POST'])
 def start_session():
-    """Initialize a test session"""
-    data = request.json
+    data = request.json or {}
     user_id = data.get('user_id')
     total_questions = data.get('total_questions', 5)
     test_category = data.get('category', 'thoughts')
+    include_questions = data.get('include_personality_questions', False)
 
-    session_id = f"{user_id}_{int(time.time())}"
-    session = UserSession(user_id, session_id)
-    session.total_questions = total_questions
+    try:
+        session = _create_new_session(user_id, total_questions, test_category)
+    except ValueError as exc:
+        return jsonify({'error': str(exc)}), 400
 
-    user_sessions[session_id] = session
-
-    return jsonify({
-        'session_id': session_id,
+    response_payload = {
+        'session_id': session.session_id,
         'user_id': user_id,
         'category': test_category,
         'status': 'started',
         'message': 'Session initialized',
-        'total_questions': total_questions
-    })
+        'total_questions': total_questions,
+        'next_step': 'personality_assessment',
+        'session': session.to_dict()
+    }
+
+    if include_questions:
+        assessment_questions = personality_assessor.get_all_questions()
+        response_payload['personality_assessment'] = {
+            'questions': assessment_questions,
+            'total': len(assessment_questions),
+            'estimated_time_minutes': 4
+        }
+
+    return jsonify(response_payload)
 
 # ============================================================================
-# NEW: QUESTION LOADING ROUTES (Acadza Integration)
+# QUESTION LOADING ROUTES (Acadza Integration)
 # ============================================================================
 
 @app.route('/api/fetch-test-questions', methods=['POST'])
 def fetch_test_questions():
-    """Disabled placeholder while Stress Dost is exposed as an API service"""
-    return jsonify({
-        'status': 'disabled',
-        'message': 'Acadza question fetching is temporarily disabled. Use the Stress Dost API guide to integrate your own question source.'
-    }), 503
+    try:
+        data = request.json
+        session_id = data.get('session_id')
+        num_questions = data.get('num_questions', 20)
+
+        session = user_sessions.get(session_id)
+        if not session:
+            return jsonify({'error': 'Invalid session'}), 404
+
+        if not session.personality_completed:
+            return jsonify({'error': 'Personality assessment required first'}), 400
+
+        from question_service import question_loader
+        question_ids = question_loader.get_random_ids(count=num_questions)
+        raw_questions = acadza_fetcher.fetch_multiple(question_ids)
+        formatted_questions = [
+            QuestionFormatter.format_question(q, idx)
+            for idx, q in enumerate(raw_questions)
+        ]
+
+        session.loaded_questions = formatted_questions
+        session.total_questions = len(formatted_questions)
+
+        return jsonify({
+            'status': 'success',
+            'session_id': session_id,
+            'questions': formatted_questions,
+            'total_questions': len(formatted_questions),
+            'question_pool': session.question_pool,
+            'personality_vector': session.personality_vector,
+            'message': f'Loaded {len(formatted_questions)} questions'
+        })
+
+    except Exception as e:
+        logging.error(f"Error fetching test questions: {e}")
+        return jsonify({'error': str(e), 'status': 'failed'}), 500
 
 @app.route('/api/submit-answer', methods=['POST'])
 def submit_answer():
-    """
-    Submit answer to a question
-    Updated to work with Acadza question format
-    """
-    return jsonify({
-        'status': 'disabled',
-        'message': 'Question submission is disabled until the Stress Dost API is integrated with your question fetcher.'
-    }), 503
+    try:
+        data = request.json
+        session_id = data.get('session_id')
+        question_id = data.get('question_id')
+        selected_answer = data.get('selected_answer')
+        time_taken = data.get('time_taken', 0)
+
+        session = user_sessions.get(session_id)
+        if not session:
+            return jsonify({'error': 'Invalid session'}), 404
+
+        question = next(
+            (q for q in session.loaded_questions if q['question_id'] == question_id),
+            None
+        )
+        if not question:
+            return jsonify({'error': 'Question not found in session'}), 404
+
+        is_correct = False
+        if question['question_type'] == 'scq':
+            is_correct = selected_answer == question.get('correct_answer', 'A')
+        elif question['question_type'] == 'mcq':
+            correct_answers = question.get('correct_answers', [])
+            is_correct = selected_answer in correct_answers
+
+        return jsonify({
+            'status': 'success',
+            'is_correct': is_correct,
+            'correct_answer': question.get('correct_answer'),
+            'time_taken': time_taken,
+            'message': 'Answer recorded'
+        })
+
+    except Exception as e:
+        logging.error(f"Error submitting answer: {e}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/get-question-by-index', methods=['POST'])
 def get_question_by_index():
-    """Get a specific question by its index in the test"""
-    return jsonify({
-        'status': 'disabled',
-        'message': 'Randomized question lookup is disabled while we migrate to the Stress Dost API-first flow.'
-    }), 503
+    try:
+        data = request.json
+        session_id = data.get('session_id')
+        question_index = data.get('question_index', 0)
+
+        session = user_sessions.get(session_id)
+        if not session:
+            return jsonify({'error': 'Invalid session'}), 404
+
+        if not session.loaded_questions:
+            return jsonify({'error': 'Questions not loaded'}), 400
+
+        if question_index >= len(session.loaded_questions):
+            return jsonify({'error': 'Question index out of range'}), 400
+
+        question = session.loaded_questions[question_index]
+
+        return jsonify({
+            'status': 'success',
+            'question': question,
+            'question_number': question_index + 1,
+            'total_questions': len(session.loaded_questions)
+        })
+
+    except Exception as e:
+        logging.error(f"Error getting question: {e}")
+        return jsonify({'error': str(e)}), 500
 
 # ============================================================================
 # EXISTING ROUTES (Trigger & Meter Management)
 # ============================================================================
 
 @app.route('/api/get-trigger', methods=['POST'])
+@app.route('@/api/module/trigger', methods=['POST'])
 def get_trigger():
-    """Get next trigger for current question"""
     data = request.json
     session_id = data.get('session_id')
-    question_index = data.get('question_index')
+    question_index = data.get('question_index', 0)
     label = data.get('label', 'thoughts')
 
     session = user_sessions.get(session_id)
     if not session:
         return jsonify({'error': 'Invalid session'}), 404
+
+    if not session.personality_completed:
+        return jsonify({
+            'error': 'Personality assessment not completed',
+            'status': 'pending_personality'
+        }), 400
 
     session.current_question_index = question_index
     session.question_start_time = time.time()
@@ -1536,13 +1790,14 @@ def get_trigger():
         'source': source,
         'question_index': question_index,
         'session_id': session_id,
-        'status': 'trigger_ready'
+        'status': 'trigger_ready',
+        'session': session.to_dict()
     })
 
 @app.route('/api/submit-response', methods=['POST'])
+@app.route('/api/module/trigger/response', methods=['POST'])
 def submit_response():
-    """Process user response to trigger"""
-    data = request.json
+    data = request.json or {}
     session_id = data.get('session_id')
     trigger_data = data.get('trigger')
     response_data = data.get('response')
@@ -1550,6 +1805,12 @@ def submit_response():
     session = user_sessions.get(session_id)
     if not session:
         return jsonify({'error': 'Invalid session'}), 404
+
+    if not session.personality_completed:
+        return jsonify({
+            'error': 'Personality assessment not completed',
+            'status': 'pending_personality'
+        }), 400
 
     time_taken = response_data.get('time_taken', 0)
     answer_correct = response_data.get('answer_correct', False)
@@ -1618,6 +1879,16 @@ def submit_response():
             sheet_payload
         )
 
+    if session.session_manager and session.personality_vector:
+        session.session_manager.update_personality_from_performance({
+            'correct': answer_correct,
+            'response_time': question_time,
+            'category': label
+        })
+        state_snapshot = session.session_manager.get_session_state()
+        session.personality_vector = state_snapshot.get('current_personality_vector', session.personality_vector)
+        session.current_traits = state_snapshot.get('current_traits', session.current_traits)
+
     return jsonify({
         'status': 'response_recorded',
         'meters': {
@@ -1634,8 +1905,8 @@ def submit_response():
     })
 
 @app.route('/api/end-session', methods=['POST'])
+@app.route('/api/module/session/end', methods=['POST'])
 def end_session():
-    """Finalize session and return results"""
     data = request.json
     session_id = data.get('session_id')
 
@@ -1646,6 +1917,7 @@ def end_session():
     report = {
         'session_id': session_id,
         'user_id': session.user_id,
+        'personality_vector': session.personality_vector,
         'duration_seconds': (datetime.now() - session.start_time).total_seconds(),
         'final_meters': {
             'fear': round(session.meter_state.fear_meter, 3),
@@ -1665,35 +1937,32 @@ def end_session():
 
 @app.route('/api/health', methods=['GET'])
 def health():
-    """Health check endpoint"""
     return jsonify({
         'status': 'healthy',
         'version': '2.0.0',
         'active_sessions': len(user_sessions),
-        'chatgpt_configured': bool(GROQ_API_KEY),
-        'ai_provider': 'groq' if groq_client else 'none',
+        'personality_assessment': 'active',
+        'chatgpt_configured': bool(OPENAI_API_KEY),
+        'ai_provider': 'openai' if personalized_ai_generator else 'none',
         'sheets_configured': sheets_logger is not None,
         'questions_api': 'active'
     })
 
 # ============================================================================
-# WEBSOCKET EVENTS (Real-time updates)
+# WEBSOCKET EVENTS
 # ============================================================================
 
 @socketio.on('connect')
 def handle_connect():
-    """Handle client connection"""
     print(f"Client connected: {request.sid}")
     emit('connection_response', {'data': 'Connected to Stress Dost server v2.0'})
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    """Handle client disconnection"""
     print(f"Client disconnected: {request.sid}")
 
 @socketio.on('meter_update')
 def handle_meter_update(data):
-    """Broadcast meter updates to all connected clients"""
     emit('meter_update', data, broadcast=True)
 
 # ============================================================================
