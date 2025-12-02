@@ -1,22 +1,22 @@
-"""Groq prompt builder that injects personality context."""
+"""OpenAI prompt builder that injects personality context."""
 
 from __future__ import annotations
 
 import json
 from typing import Dict, List, Optional, Tuple
 
-from groq import Groq
+from openai import OpenAI
 
 from personality_mapper import personality_mapper
 
 
-class PersonalizedGroqGenerator:
+class PersonalizedOpenAIGenerator:
     """Generate popup payloads that respect the student's personality."""
 
-    def __init__(self, api_key: Optional[str], model: str = "mixtral-8x7b-32768"):
+    def __init__(self, api_key: Optional[str], model: str = "gpt-4o-mini"):
         self.api_key = api_key
         self.model = model
-        self.client = Groq(api_key=api_key) if api_key else None
+        self.client = OpenAI(api_key=api_key) if api_key else None
 
     def generate_popup(
         self,
@@ -26,7 +26,7 @@ class PersonalizedGroqGenerator:
         meter_context: Optional[Dict] = None,
         force_option_based: bool = False,
     ) -> Optional[Dict]:
-        """Call Groq with enriched prompt and return parsed popup dict."""
+        """Call OpenAI with enriched prompt and return parsed popup dict."""
         if not self.client:
             return None
 
@@ -55,7 +55,7 @@ class PersonalizedGroqGenerator:
 
         valid, reason = self.validate_generation(popup, selected_tags, category)
         if not valid:
-            print(f"Groq validation failed: {reason}")
+            print(f"OpenAI validation failed: {reason}")
             return None
         return popup
 
@@ -139,12 +139,12 @@ Requirements:
 10. Output must be valid minified JSON with keys: type, text, options, value.
 
 Respond ONLY with JSON like:
-{{
+{
   "type": "motivation|sarcasm|option_based",
   "text": "Message here",
   "options": ["opt1","opt2","opt3"],
   "value": 0.4
-}}
+}
 
 If type != "option_based", return an empty list for options."""
 
