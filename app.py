@@ -1716,7 +1716,7 @@ if __name__ == '__main__':
     print("""
 ╔═══════════════════════════════════════════════════════════╗
 ║         STRESS DOST v2.0 - Production Ready              ║
-║  ✓ Groq AI Integration                                   ║
+║  ✓ OpenAI Integration                                    ║
 ║  ✓ Acadza Question API Integration                       ║
 ║  ✓ Real-time WebSocket Updates                           ║
 ║  ✓ Google Sheets Logging                                 ║
@@ -1724,5 +1724,15 @@ if __name__ == '__main__':
 ╚═══════════════════════════════════════════════════════════╝
     """)
 
-    socketio.run(app, debug=True, host='0.0.0.0', port=5000)
+    render_port = int(os.environ.get('PORT', 5000))
+    debug_mode = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+    # Respect Render's injected PORT and keep debug off unless explicitly requested
+    socketio.run(
+        app,
+        debug=debug_mode,
+        host='0.0.0.0',
+        port=render_port,
+        allow_unsafe_werkzeug=True  # Render runs behind its own proxy
+    )
+
 
